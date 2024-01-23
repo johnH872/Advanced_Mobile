@@ -8,18 +8,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int currentPageIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.amber[50],
-      bottomNavigationBar: _builderNavigationBar(),
+      bottomNavigationBar: _buildNavigationBar(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(25.0),
           child: Column(
             children: [
               _buildHeaderWidget(),
+              const SizedBox(height: 15),
               _builderPunchInOutCard()
             ],
           ),
@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Monica Jamesss',
+                  'Monica James',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         Card (
           child: SizedBox(
-            width: 300,
+            width: 353,
             height: 100,
             child: Center(child: Text('Elevated Card'))
           ),
@@ -101,7 +101,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _builderNavigationBar() {
+  Widget _buildNavigationBar() {
+    int currentPageIndex = 0;
     return NavigationBar(
       onDestinationSelected: (int index) {
         setState(() {
