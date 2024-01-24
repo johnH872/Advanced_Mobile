@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hrm_mobile/core/configs/user_db.dart';
 import 'package:hrm_mobile/core/constants/theme/color_schemes.g.dart';
+import 'package:hrm_mobile/modules/shared/models/user.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({ super.key });
@@ -9,6 +11,29 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Future<UserModel> currentUser = Future(() => UserModel(id: "Unknow", firstName: 'Unknow', middleName: 'Unknow', lastName: 'Unknow', role: 'Unknow'));
+  var fullName = '';
+  var role = '';
+  final userDB = UserDB();
+
+  @override
+  void initState() {
+    super.initState();
+
+    fetchCurrentUser();
+  }
+
+  void fetchCurrentUser() {
+    setState(() {
+      currentUser = userDB.fetchById("User1");
+      currentUser.then((value) => {
+        fullName = "${value.firstName} ${value.middleName} ${value.lastName}",
+        role = value.role,
+        setState(() {})
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +84,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildHeaderWidget() {
-    return const 
+    return 
     Column(
       mainAxisSize: MainAxisSize.min,
       children: [Row(
@@ -70,14 +95,14 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.menu,
                 color: Colors.black
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
-              CircleAvatar(
+              const CircleAvatar(
                 backgroundColor: Colors.brown,
                 radius: 24,
                 child: Text('MD',style: TextStyle(
@@ -86,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                       fontWeight: FontWeight.bold 
                     ),),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Column(
@@ -94,19 +119,19 @@ class _HomePageState extends State<HomePage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Monica James',
-                    style: TextStyle(
+                    fullName,
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 20,
                       fontWeight: FontWeight.bold 
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 4,
                   ),
                   Text(
-                    'HR Manager',
-                    style: TextStyle(
+                    role,
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 14,
                     ),
@@ -115,7 +140,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          Icon(
+          const Icon(
             Icons.notifications,
             color: Colors.black
           )
@@ -341,7 +366,7 @@ class _HomePageState extends State<HomePage> {
             color: Colors.white,
             child: SizedBox(
               width: 100,
-              height: 240,
+              height: 208,
               child: Padding(
                 padding: const EdgeInsets.all(15),
                 child: Column(
@@ -362,20 +387,19 @@ class _HomePageState extends State<HomePage> {
                             fontSize: 12,
                           ),),
                         ],),
-                        ButtonTheme(
-                          minWidth: 300,
-                          height: 100,
-                          child: FilledButton(
-                            onPressed: () { }, 
-                            child: const Text('Submit leave', style: TextStyle(fontSize: 12))
-                          )
-                        ),
+                        FilledButton(
+                          onPressed: () { }, 
+                          style: const ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll<Color>(Color(0xff389151)),
+                          ),
+                          child: const Text('Submit leave', style: TextStyle(fontSize: 12)),
+                        )
                       ],
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    _builderPunchedStatus(),
+                    _builderLeaveEntitlementCard(),
                   ],
                 ) 
               ),
@@ -384,5 +408,98 @@ class _HomePageState extends State<HomePage> {
         )
       ],
     );
+  }
+
+  Widget _builderLeaveEntitlementCard() {
+    return Container(
+      width: 340,
+      height: 120,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: const Color(0xff0A672A),
+      ),
+      child: const Padding(
+        padding: EdgeInsets.all(20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text('Leave entitilement', style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold 
+                              ),),
+                Text('Total',style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold 
+                              ),),
+              ],  
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Wrap(
+                  spacing: 10,
+                    children: [
+                      Text('Usable', style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold 
+                                ),),
+                      Text('Used',style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold 
+                                ),),
+                      Text('Remain',style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold 
+                                ),),
+                      Text('Budget',style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold 
+                                ),),
+                  ],
+                ),
+                Wrap(
+                  spacing: 30,
+                    children: [
+                      Text('0', style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold 
+                                ),),
+                      Text('0',style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold 
+                                ),),
+                      Text('0',style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold 
+                                ),),
+                      Text('0',style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold 
+                                ),),
+                  ],
+                )
+              ],  
+            ),
+          ],
+        ),
+      )   
+    ); 
   }
 }
