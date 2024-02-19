@@ -8,7 +8,7 @@
             "name": "hrm_mobile",
             "request": "launch",
             "type": "dart",
-            "program": "lib/main/main.dart"
+            "program": "lib/main.dart"
         },
         {
             "name": "hrm_mobile (profile mode)",

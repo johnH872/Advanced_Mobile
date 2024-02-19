@@ -1,4 +1,4 @@
-import 'package:hrm_mobile/core/configs/user_db.dart';
+import 'package:hrm_mobile/features/auth/user_db.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 

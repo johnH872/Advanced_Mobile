@@ -1,37 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:hrm_mobile/core/configs/user_db.dart';
-import 'package:hrm_mobile/core/constants/theme/color_schemes.g.dart';
-import 'package:hrm_mobile/modules/shared/models/user.dart';
+import 'package:hrm_mobile/constants/color_schemes.g.dart';
+import 'package:hrm_mobile/features/auth/user.model.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({ super.key });
+  final acccessToken;
+  const HomePage({@required this.acccessToken, super.key });
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  late SharedPreferences prefs;
   Future<UserModel> currentUser = Future(() => UserModel(id: "Unknow", firstName: 'Unknow', middleName: 'Unknow', lastName: 'Unknow', role: 'Unknow'));
-  var fullName = '';
-  var role = '';
-  final userDB = UserDB();
+  late String email;
 
   @override
   void initState() {
     super.initState();
-
-    fetchCurrentUser();
+    initSharedPref();
+    checkLoggedIn();
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.acccessToken);
+    if(jwtDecodedToken['user'].isNotEmpty) {
+      email = jwtDecodedToken['user']['email'];
+    }
   }
 
-  void fetchCurrentUser() {
-    setState(() {
-      currentUser = userDB.fetchById("User1");
-      currentUser.then((value) => {
-        fullName = "${value.firstName} ${value.middleName} ${value.lastName}",
-        role = value.role,
-        setState(() {})
-      });
-    });
+  void checkLoggedIn() {
+    if(JwtDecoder.tryDecode(widget.acccessToken) != null) {
+      if(!JwtDecoder.isExpired(widget.acccessToken)) return;
+    }
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (r) => false);
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  void onClickLogout() {
+    prefs.clear();
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (r) => false);
   }
 
   @override
@@ -95,9 +105,11 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.menu,
-                color: Colors.black
+              IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  onClickLogout();
+                },
               ),
               const SizedBox(
                 width: 10,
@@ -114,24 +126,24 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 width: 10,
               ),
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    fullName,
-                    style: const TextStyle(
+                    'Hoang Ta',
+                    style: TextStyle(
                       color: Colors.black,
                       fontSize: 20,
                       fontWeight: FontWeight.bold 
                     ),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     height: 4,
                   ),
                   Text(
-                    role,
-                    style: const TextStyle(
+                    'HR Manager',
+                    style: TextStyle(
                       color: Colors.black,
                       fontSize: 14,
                     ),
@@ -348,6 +360,7 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: Colors.white,
             elevation: 1,
             foregroundColor: Colors.black,
+            heroTag: name,
             child: icon,
           ),
           const SizedBox(height: 5,),

@@ -1,5 +1,5 @@
-import 'package:hrm_mobile/core/configs/database_service.dart';
-import 'package:hrm_mobile/modules/shared/models/user.dart';
+import 'package:hrm_mobile/utils/database_service.dart';
+import 'package:hrm_mobile/features/auth/user.model.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UserDB {
