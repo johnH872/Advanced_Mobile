@@ -11,4 +11,11 @@ class LoginModel extends LoginInEntity {
       'password': password
     };
   }
+
+  factory LoginModel.fromEntity(LoginInEntity entity) {
+    return LoginModel(
+      email: entity.email,
+      password: entity.password
+    );
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hrm_mobile/core/util/snackbar_message.dart';
 import 'package:hrm_mobile/features/auth/data/models/otp_model.dart';
 import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   final String email;
@@ -14,7 +15,14 @@ class ChangePasswordScreen extends StatefulWidget {
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final SnackBarMessage snackBarMessage = SnackBarMessage();
-  final passwordController = TextEditingController();
+  final form = FormGroup({
+    "password": FormControl<String>(validators: [
+      Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(20)
+    ]),
+    "confirmPassword": FormControl<String>(),
+  }, validators: [const MustMatchValidator('password', 'confirmPassword', true)]);
 
   @override
   void initState() {
@@ -23,7 +31,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   void dispose() {
-    passwordController.dispose();
+    form.dispose();
     super.dispose();
   }
 
@@ -33,7 +41,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         appBar: AppBar(),
         body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Column(
+            child: ReactiveForm(
+              formGroup: form, 
+              child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -47,16 +57,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  'Please enter yuor new password.',
+                  'Please enter your new password.',
                   style: TextStyle(color: Colors.black54, fontSize: 14),
                 ),
                 const SizedBox(height: 30),
-                TextField(
-                  controller: passwordController,
+                ReactiveTextField(
+                  formControlName: 'password',
                   obscureText: true,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'New password',
+                    labelText: 'Enter new password',
+                  ),
+                ),
+                const SizedBox(height: 30),
+                ReactiveTextField(
+                  formControlName: 'confirmPassword',
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Re-enter password',
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -77,22 +96,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         child: CircularProgressIndicator(),
                       );
                     }
-                    return FilledButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(40),
-                      ),
-                      onPressed: () {
-                        BlocProvider.of<AuthBloc>(context).add(
-                            ChangePasswordEvent(
-                                otpModel: OTPModel(
-                                    email: widget.email,
-                                    password: passwordController.text)));
-                      },
-                      child: const Text('Change'),
-                    );
+                    return ReactiveFormConsumer(builder: (context, formGroup, child) {
+                      return FilledButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(40),
+                        ),
+                        onPressed: form.valid ? () {
+                          BlocProvider.of<AuthBloc>(context).add(
+                              ChangePasswordEvent(
+                                  otpModel: OTPModel(
+                                      email: widget.email,
+                                      password: form.control('password').value)));
+                        } : null,
+                        child: const Text('Change'),
+                      );
+                    });
+                    
                   },
                 ),
               ],
-            )));
+            )))
+            );
   }
 }

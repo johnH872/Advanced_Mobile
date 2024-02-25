@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hrm_mobile/core/util/snackbar_message.dart';
 import 'package:hrm_mobile/features/auth/data/models/otp_model.dart';
 import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class ValidateOTPScreen extends StatefulWidget {
   final String email;
@@ -14,7 +15,10 @@ class ValidateOTPScreen extends StatefulWidget {
 
 class _ValidateOTPScreenState extends State<ValidateOTPScreen> {
   final SnackBarMessage snackBarMessage = SnackBarMessage();
-  final otpController = TextEditingController();
+  final form = FormGroup({
+    "otp": FormControl<String>(
+        validators: [Validators.required, Validators.maxLength(8), Validators.minLength(8)]),
+  });
 
   @override
   void initState() {
@@ -23,7 +27,7 @@ class _ValidateOTPScreenState extends State<ValidateOTPScreen> {
 
   @override
   void dispose() {
-    otpController.dispose();
+    form.dispose();
     super.dispose();
   }
 
@@ -33,7 +37,9 @@ class _ValidateOTPScreenState extends State<ValidateOTPScreen> {
         appBar: AppBar(),
         body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Column(
+            child: ReactiveForm(
+              formGroup: form,
+              child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -53,8 +59,8 @@ class _ValidateOTPScreenState extends State<ValidateOTPScreen> {
                   style: TextStyle(color: Colors.black54, fontSize: 14),
                 ),
                 const SizedBox(height: 30),
-                TextField(
-                  controller: otpController,
+                ReactiveTextField(
+                  formControlName: "otp",
                   obscureText: false,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
@@ -79,20 +85,24 @@ class _ValidateOTPScreenState extends State<ValidateOTPScreen> {
                         child: CircularProgressIndicator(),
                       );
                     }
-                    return FilledButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(40),
-                      ),
-                      onPressed: () {
-                        BlocProvider.of<AuthBloc>(context).add(ValidateOTPEvent(
-                            otpModel: OTPModel(
-                                email: widget.email, otp: otpController.text)));
-                      },
-                      child: const Text('Verify'),
-                    );
+                    return ReactiveFormConsumer(builder: (context, formGroup, child) {
+                      return FilledButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(40),
+                        ),
+                        onPressed: form.valid ? () {
+                          BlocProvider.of<AuthBloc>(context).add(ValidateOTPEvent(
+                              otpModel: OTPModel(
+                                  email: widget.email, otp: form.control('otp').value)));
+                        } : null,
+                        child: const Text('Verify'),
+                      );
+                    });
+                    
                   },
                 ),
               ],
-            )));
+            ))),
+            );
   }
 }
