@@ -5,8 +5,8 @@ import 'package:hrm_mobile/features/auth/domain/entities/otp_entity.dart';
 
 abstract class AuthRepository {
   
-  Future<DataState<String>> login(LoginInEntity loginModel);
-  Future<DataState<ReturnResult<String>>> sendOTP(OTPEntity otpModel);
-  Future<DataState<ReturnResult<bool>>> validateOTP(OTPEntity otpModel);
-  Future<DataState<ReturnResult<String>>> changePassword(OTPEntity otpModel);
+  Future<DataState<String>> login(LoginInEntity loginEntity);
+  Future<DataState<ReturnResult<String>>> sendOTP(OTPEntity otpEntity);
+  Future<DataState<ReturnResult<bool>>> validateOTP(OTPEntity otpEntity);
+  Future<DataState<ReturnResult<String>>> changePassword(OTPEntity otpEntity);
 }

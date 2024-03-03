@@ -3,7 +3,8 @@ part of 'auth_bloc.dart';
 sealed class AuthState extends Equatable {
   final DioException? dioException;
   final String? token;
-  const AuthState({this.dioException, this.token});
+  final TokenPayLoadEntity? tokenPayLoadEntity;
+  const AuthState({this.dioException, this.tokenPayLoadEntity, this.token,});
   
   @override
   List<Object> get props => [dioException!, token!];
@@ -15,7 +16,11 @@ final class LoadingState extends AuthState{}
 
 final class LoggedOutState extends AuthState{}
 
-final class LoggedInState extends AuthState{}
+final class LoggedInState extends AuthState{
+  const LoggedInState({required tokenPayLoadEntity}) : super(tokenPayLoadEntity: tokenPayLoadEntity);
+  @override
+  List<Object> get props => [tokenPayLoadEntity!];
+}
 
 final class SendOTPState extends AuthState{
   final String email ;
@@ -25,14 +30,6 @@ final class SendOTPState extends AuthState{
 }
 
 final class SendOTPSuccessState extends AuthState{}
-
-// final class ValidateOTPState extends AuthState{
-//   final String email;
-//   final String otp;
-//   const ValidateOTPState({required this.email, required this.otp});
-//   @override
-//   List<Object> get props => [email];
-// }
 
 final class ValidOTPState extends AuthState{}
 

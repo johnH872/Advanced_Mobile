@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hrm_mobile/features/auth/presentation/pages/app_navigator.dart';
 import 'package:hrm_mobile/features/auth/presentation/pages/auth/change_password_screen.dart';
 import 'package:hrm_mobile/features/auth/presentation/pages/auth/login_screen.dart';
 import 'package:hrm_mobile/features/auth/presentation/pages/auth/request_password_screen.dart';
 import 'package:hrm_mobile/features/auth/presentation/pages/auth/validate_otp_screen.dart';
-import 'package:hrm_mobile/features/auth/presentation/pages/home_page.dart';
+import 'package:hrm_mobile/features/informations/presentation/pages/employee_list_screen.dart';
 
 class AppRoutes {
   static Route onGenerateRoutes(RouteSettings settings) {
@@ -28,7 +29,10 @@ class AppRoutes {
 
       // App routes
       case '/home':
-        return _materialRoute(const HomePage());
+        return _materialRoute(const AppNavigator());
+
+      case '/list-employee':
+        return _materialRoute(const ListEmployeeScreen());
 
 
       default:

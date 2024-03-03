@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hrm_mobile/features/auth/data/models/login_model.dart';
 import 'package:hrm_mobile/features/auth/data/models/otp_model.dart';
+import 'package:hrm_mobile/features/auth/domain/entities/token_payload_entity.dart';
 import 'package:hrm_mobile/features/auth/domain/usecases/change_password_usecase.dart';
 import 'package:hrm_mobile/features/auth/domain/usecases/login_usecase.dart';
 import 'package:hrm_mobile/features/auth/domain/usecases/send_otp_usecase.dart';
@@ -38,13 +39,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEvent>((event, emit) async {
       prefs = await SharedPreferences.getInstance();
       if (event is CheckLoggingInEvent) {
-        if (isLoggedIn()) emit(LoggedInState());
+        if (isLoggedIn()) {
+          var tokenPayload = getTokenPayLoad();
+          emit(LoggedInState(tokenPayLoadEntity: tokenPayload));
+        } 
       } else if (event is LogInEvent) {
         emit(LoadingState());
         final loginDataState = await logInUseCase(params: event.loginModel);
         if (loginDataState.data != null) {
           saveToken(loginDataState.data);
-          emit(LoggedInState());
+          var tokenPayload = getTokenPayLoad();
+          emit(LoggedInState(tokenPayLoadEntity: tokenPayload));
         }
         if (loginDataState.error != null) {
           emit(ErrorAuthState(message: loginDataState.error!.response!.data));
@@ -84,8 +89,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-  saveToken(String? token) {
-    if (token != null) prefs.setString("accessToken", token);
+  void saveToken(String? token) {
+    if(token != null) prefs.setString("accessToken", token);
+  }
+
+  TokenPayLoadEntity getTokenPayLoad() {
+    // ignore: avoid_init_to_null
+    TokenPayLoadEntity payload = const TokenPayLoadEntity();
+    try {
+      var token = prefs.getString("accessToken");
+      if (token != null) {
+        if (JwtDecoder.tryDecode(token) != null) {
+          Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+          payload = TokenPayLoadEntity.fromJson(decodedToken['user']);
+        }
+      }
+    // ignore: empty_catches
+    } catch (error) {}
+    return payload;
   }
 
   isLoggedIn() {
@@ -103,36 +124,4 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   clearToken() {
     prefs.clear();
   }
-
-  // AuthState eitherToState ( DataState either , AuthState state){
-  //   return either.fold(
-  //         (failure) => ErrorAuthState(message: _mapFailureToMessage(failure)),
-  //         (_) => state,
-  //   );
-  // }
-
-  // String _mapFailureToMessage(Failure failure) {
-  //   switch (failure.runtimeType) {
-  //     case ServerFailure:
-  //       return SERVER_FAILURE_MESSAGE;
-  //     case OfflineFailure:
-  //       return OFFLINE_FAILURE_MESSAGE;
-  //     case WeekPassFailure:
-  //       return WEEK_PASS_FAILURE_MESSAGE;
-  //     case ExistedAccountFailure:
-  //       return EXISTED_ACCOUNT_FAILURE_MESSAGE;
-  //     case NoUserFailure:
-  //       return NO_USER_FAILURE_MESSAGE;
-  //     case TooManyRequestsFailure:
-  //       return TOO_MANY_REQUESTS_FAILURE_MESSAGE;
-  //     case WrongPasswordFailure:
-  //       return WRONG_PASSWORD_FAILURE_MESSAGE;
-  //     case UnmatchedPassFailure:
-  //       return UNMATCHED_PASSWORD_FAILURE_MESSAGE;
-  //     case NotLoggedInFailure:
-  //       return '';
-  //     default:
-  //       return "Unexpected Error , Please try again later .";
-  //   }
-  // }
 }

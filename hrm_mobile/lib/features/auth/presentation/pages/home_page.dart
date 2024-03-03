@@ -11,12 +11,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.amber[50],
-        bottomNavigationBar: _buildNavigationBar(),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -28,34 +26,26 @@ class _HomePageState extends State<HomePage> {
                       width: MediaQuery.of(context).size.width,
                       height: 254,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius:const BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
                         color: lightColorScheme.primaryContainer,
                       ),
-                      child: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 25, top: 40, left: 25, bottom: 20),
-                          child: _buildHeaderWidget()),
+                      child: Padding(padding: const EdgeInsets.only(right: 25, top: 40, left: 25, bottom: 20), child: _buildHeaderWidget()),
                     ),
                     Positioned(
                       top: 80.0,
                       left: 0.0,
                       right: 0.0,
-                      child: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 25, top: 40, left: 25, bottom: 20),
-                          child: _builderPunchInOutCard()),
+                      child: Padding(padding: const EdgeInsets.only(right: 25, top: 40, left: 25, bottom: 20), child: _builderPunchInOutCard()),
                     ),
                   ],
                 ),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
-                child: _builderButtonList(),
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                child: _builderButtonList(context),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                 child: _builderLeaveEntitlement(),
               )
             ],
@@ -64,73 +54,67 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildHeaderWidget() {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if(state is LoggedOutState) {
-          Navigator.of(context).pushNamedAndRemoveUntil('/login',(r) => false);
-        }
-      },
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.logout),
-                  onPressed: () {
-                    BlocProvider.of<AuthBloc>(context).add(LogOutEvent());
-                  },
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                const CircleAvatar(
-                  backgroundColor: Colors.brown,
-                  radius: 24,
-                  child: Text(
-                    'MD',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
+    return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
+      if (state is LoggedOutState) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/login', (r) => false);
+      }
+    }, builder: (context, state) {
+      if (state is! LoggedOutState) {
+        return Column(mainAxisSize: MainAxisSize.min, children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    onPressed: () {
+                      BlocProvider.of<AuthBloc>(context).add(LogOutEvent());
+                    },
                   ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Hoang Ta',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  const CircleAvatar(
+                    backgroundColor: Colors.brown,
+                    radius: 24,
+                    child: Text(
+                      'MD',
+                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                    Text(
+                      '${state.tokenPayLoadEntity!.firstName ?? ""} ${state.tokenPayLoadEntity!.middleName ?? ""} ${state.tokenPayLoadEntity!.lastName ?? ""}',
+                      style: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      state.tokenPayLoadEntity!.jobTitle ?? "No position",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
                       ),
-                      SizedBox(
-                        height: 4,
-                      ),
-                      Text(
-                        'HR Manager',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                        ),
-                      )
-                    ]),
-              ],
-            ),
-            const Icon(Icons.notifications, color: Colors.black)
-          ],
-        ),
-      ]),
-    );
+                    )
+                  ]),
+                ],
+              ),
+              const Icon(Icons.notifications, color: Colors.black)
+            ],
+          ),
+        ]);
+      } else {
+        return Container();
+      }
+    });
   }
 
   Widget _builderPunchInOutCard() {
@@ -157,17 +141,11 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Text(
                                 'Today\'s overview',
-                                style: TextStyle(
-                                    color: Color.fromRGBO(72, 68, 67, 40),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Color.fromRGBO(72, 68, 67, 40), fontSize: 12, fontWeight: FontWeight.bold),
                               ),
                               Text(
                                 '24 Junary 2024',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -202,8 +180,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               flex: 1,
               child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 20, bottom: 20, left: 10, right: 10),
+                padding: const EdgeInsets.only(top: 20, bottom: 20, left: 10, right: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -218,8 +195,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const Text(
                       '08:00 AM',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     OutlinedButton(
                         onPressed: () {},
@@ -240,8 +216,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               flex: 1,
               child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 20, bottom: 20, left: 10, right: 10),
+                padding: const EdgeInsets.only(top: 20, bottom: 20, left: 10, right: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -256,16 +231,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const Text(
                       '05:00 PM',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    ButtonTheme(
-                        minWidth: 300,
-                        height: 100,
-                        child: FilledButton(
-                            onPressed: () {},
-                            child: const Text('Not yet',
-                                style: TextStyle(fontSize: 12)))),
+                    ButtonTheme(minWidth: 300, height: 100, child: FilledButton(onPressed: () {}, child: const Text('Not yet', style: TextStyle(fontSize: 12)))),
                   ],
                 ),
               ),
@@ -274,42 +242,23 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  Widget _buildNavigationBar() {
-    int currentPageIndex = 0;
-    return NavigationBar(
-      onDestinationSelected: (int index) {
-        setState(() {
-          currentPageIndex = index;
-        });
-      },
-      indicatorColor: Colors.amber,
-      selectedIndex: currentPageIndex,
-      destinations: const <Widget>[
-        NavigationDestination(
-          selectedIcon: Icon(Icons.home),
-          icon: Icon(Icons.home_outlined),
-          label: 'Home',
-        ),
-        NavigationDestination(
-          selectedIcon: Icon(Icons.timer),
-          icon: Icon(Icons.timer_rounded),
-          label: 'Attendance',
-        ),
-        NavigationDestination(
-          selectedIcon: Icon(Icons.calendar_month),
-          icon: Icon(Icons.calendar_month_outlined),
-          label: 'Leave',
-        ),
-        NavigationDestination(
-          selectedIcon: Icon(Icons.person),
-          icon: Icon(Icons.person_2_outlined),
-          label: 'Profile',
-        ),
-      ],
-    );
-  }
+  // Widget _buildNavigationBar() {
+  //   int currentPageIndex = 0;
+  //   return NavigationBar(
+  //     onDestinationSelected: (int index) {
+  //       setState(() {
+  //         currentPageIndex = index;
+  //       });
+  //     },
+  //     indicatorColor: Colors.amber,
+  //     selectedIndex: currentPageIndex,
+  //     destinations: const <Widget>[
 
-  Widget _builderButtonList() {
+  //     ],
+  //   );
+  // }
+
+  Widget _builderButtonList(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -318,60 +267,76 @@ class _HomePageState extends State<HomePage> {
           alignment: WrapAlignment.spaceBetween,
           children: [
             _builderButtonFab(
+                context,
                 "Time off",
                 const Icon(
                   Icons.next_week,
                   color: Color(0xff389151),
-                )),
+                ),
+                null),
             _builderButtonFab(
+                context,
                 "Apply leave",
                 const Icon(
                   Icons.flight_takeoff,
                   color: Color(0xff1A3BE7),
-                )),
+                ),
+                null),
             _builderButtonFab(
+                context,
                 "News",
                 const Icon(
                   Icons.document_scanner,
                   color: Color(0xffC47D29),
-                )),
+                ),
+                null),
             _builderButtonFab(
+                context,
                 "Timesheet",
                 const Icon(
                   Icons.calendar_month,
                   color: Color(0xffCA5858),
-                )),
+                ),
+                null),
             _builderButtonFab(
+                context,
                 "Employee",
                 const Icon(
                   Icons.group,
                   color: Color(0xff6EA1EC),
-                )),
+                ),
+                '/list-employee'),
             _builderButtonFab(
+                context,
                 "Assign leave",
                 const Icon(
                   Icons.assignment_ind,
                   color: Color(0xff5457A7),
-                )),
+                ),
+                null),
             _builderButtonFab(
+                context,
                 "Recruitment",
                 const Icon(
                   Icons.person_add,
                   color: Color(0xffAB933F),
-                )),
+                ),
+                null),
             _builderButtonFab(
+                context,
                 "Others",
                 const Icon(
                   Icons.more_horiz,
                   color: Color(0xff389151),
-                )),
+                ),
+                null),
           ],
         )
       ],
     );
   }
 
-  Widget _builderButtonFab(String name, Icon icon) {
+  Widget _builderButtonFab(BuildContext context, String name, Icon icon, String? url) {
     return Padding(
       padding: const EdgeInsets.only(top: 20),
       child: Column(
@@ -379,7 +344,9 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              if(url != null) Navigator.of(context).pushNamed(url);
+            },
             backgroundColor: Colors.white,
             elevation: 1,
             foregroundColor: Colors.black,
@@ -422,8 +389,7 @@ class _HomePageState extends State<HomePage> {
                               Icon(Icons.timelapse),
                               Text(
                                 'Leave balance ',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               Text(
                                 '(days)',
@@ -436,11 +402,9 @@ class _HomePageState extends State<HomePage> {
                           FilledButton(
                             onPressed: () {},
                             style: const ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color(0xff389151)),
+                              backgroundColor: MaterialStatePropertyAll<Color>(Color(0xff389151)),
                             ),
-                            child: const Text('Submit leave',
-                                style: TextStyle(fontSize: 12)),
+                            child: const Text('Submit leave', style: TextStyle(fontSize: 12)),
                           )
                         ],
                       ),
@@ -478,17 +442,11 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Text(
                     'Leave entitilement',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     'Total',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -501,31 +459,19 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Text(
                         'Usable',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Used',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Remain',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Budget',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -534,31 +480,19 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Text(
                         '0',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '0',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '0',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '0',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                     ],
                   )

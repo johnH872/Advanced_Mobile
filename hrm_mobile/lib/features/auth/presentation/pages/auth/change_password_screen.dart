@@ -82,12 +82,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (context, state) {
                     if (state is ChangePasswordSuccess) {
-                      snackBarMessage.showSuccessSnackBar(
-                          message: state.message, context: context);
-                      // Navigator.of(context).pushNamed('/validate-otp');
+                      snackBarMessage.showSuccessSnackBar(message: state.message, context: context);
                     } else if (state is ErrorAuthState) {
-                      snackBarMessage.showErrorSnackBar(
-                          message: state.message, context: context);
+                      snackBarMessage.showErrorSnackBar(message: state.message, context: context);
                     }
                   },
                   builder: (context, state) {
