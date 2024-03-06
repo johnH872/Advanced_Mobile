@@ -11,8 +11,8 @@ class UserProvider with ChangeNotifier {
   List<UserEntity>? get userLst => _userList;
   bool isLoading = false;
   bool isSaving = false;
-  UserEntity? loggedInUser;
-  UserEntity? currentUser;
+  UserEntity? loggedInUser = UserEntity();
+  UserEntity? currentUser = UserEntity();
 
   Future<void> getUserById(bool isMyProfile, String? userId) async {
     try {
