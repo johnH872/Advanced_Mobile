@@ -21,37 +21,41 @@ class _EmployeeApiService implements EmployeeApiService {
   String? baseUrl;
 
   @override
-  Future<HttpResponse<ServiceResponse<List<UserModel>>>>
-      getEmployeePaging() async {
+  Future<HttpResponse<ServiceResponse<PagedData<List<UserModel>>>>>
+      getEmployeePaging(Map<String, dynamic> pageModelJson) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<HttpResponse<ServiceResponse<List<UserModel>>>>(Options(
-      method: 'GET',
+    final _data = <String, dynamic>{};
+    _data.addAll(pageModelJson);
+    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
+        HttpResponse<ServiceResponse<PagedData<List<UserModel>>>>>(Options(
+      method: 'POST',
       headers: _headers,
       extra: _extra,
     )
-            .compose(
-              _dio.options,
-              'GetEmployeePaging',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            ))));
-    final value = ServiceResponse<List<UserModel>>.fromJson(
+        .compose(
+          _dio.options,
+          'GetEmployeePaging',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
+    final value = ServiceResponse<PagedData<List<UserModel>>>.fromJson(
       _result.data!,
-      (json) => json is List<dynamic>
-          ? json
-              .map<UserModel>(
-                  (i) => UserModel.fromJson(i as Map<String, dynamic>))
-              .toList()
-          : List.empty(),
+      (json) => PagedData<List<UserModel>>.fromJson(
+        json as Map<String, dynamic>,
+        (json) => json is List<dynamic>
+            ? json
+                .map<UserModel>(
+                    (i) => UserModel.fromJson(i as Map<String, dynamic>))
+                .toList()
+            : List.empty(),
+      ),
     );
     final httpResponse = HttpResponse(value, _result);
     return httpResponse;
@@ -91,11 +95,12 @@ class _EmployeeApiService implements EmployeeApiService {
 
   @override
   Future<HttpResponse<ServiceResponse<UserModel>>> saveEmployee(
-      UserModel userModel) async {
+      Map<String, dynamic> userModelJson) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = userModel.toJson();
+    final _data = <String, dynamic>{};
+    _data.addAll(userModelJson);
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<HttpResponse<ServiceResponse<UserModel>>>(Options(
       method: 'POST',

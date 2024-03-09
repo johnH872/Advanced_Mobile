@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 FormGroup get editUserForm => FormGroup({
@@ -17,23 +18,24 @@ FormGroup get editUserForm => FormGroup({
         ],
       ),
       'email': FormControl<String>(
-        validators: [
-          Validators.required,
-          Validators.email
-        ],
+        validators: [Validators.required, Validators.email],
       ),
-       'birth': FormControl<DateTime>(
+      'birth': FormControl<DateTime>(),
+      'gender': FormControl<String>(),
+      'nationality': FormControl<String>(),
+      'avatarUrl': FormControl<String>(),
+      'phoneNumber': FormControl<String>(),
+      'jobTitle': FormControl<String>(),
+      'dateStartContract': FormControl<DateTime>(),
+    });
+
+FormGroup get employeeFilterForm => FormGroup({
+      'employeeName': FormControl<String>(
       ),
-      'gender': FormControl<String>(
-      ),
-      'nationality': FormControl<String>(
-      ),
-      'avatarUrl': FormControl<String>(
-      ),
-      'phoneNumber': FormControl<String>(
-      ),
-      'jobTitle': FormControl<String>(
-      ),
-      'dateStartContract': FormControl<DateTime>(
-      ),
+      'gender': FormControl<String>(),
+      'birth': FormControl<DateTimeRange>(),
+      'nationality': FormControl<String>(),
+      'phoneNumber': FormControl<String>(),
+      'jobTitle': FormControl<String>(),
+      'dateStartContract': FormControl<DateTimeRange>(),
     });

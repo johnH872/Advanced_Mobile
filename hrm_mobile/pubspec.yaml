@@ -75,6 +75,7 @@ dependencies:
   #form
   reactive_forms: ^16.1.1
   reactive_date_time_picker: ^3.0.0
+  # syncfusion_flutter_datepicker: ^24.2.9
 
   #model
   freezed: ^2.4.7

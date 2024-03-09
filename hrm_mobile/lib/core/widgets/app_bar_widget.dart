@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final Widget leadingIcon;
-  const CustomAppBar({required this.title, required this.leadingIcon, super.key});
+  final IconButton? button_1;
+  const CustomAppBar({required this.title, required this.leadingIcon, this.button_1, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +13,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: leadingIcon, 
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold),), 
       actions: <Widget>[
+        button_1 ?? Container(),
         IconButton(
           icon: const Icon(Icons.notifications),
           tooltip: 'Notification',

@@ -37,6 +37,9 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
 
   initData() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    // ----------------LOGIC-----------------
+    // If is open personal profile => get token user id and find data
+    // If is opened from user list => get user's clicked id and find data
     if (widget.isMyProfile) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var token = prefs.getString("accessToken");
@@ -106,12 +109,12 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
                                   const snackBar = SnackBar(
                                     content: Text('Successed'),
                                   );
-                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                 } else {
                                   const snackBar = SnackBar(
                                     content: Text('Failed'),
                                   );
-                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                 }
                               }
                             : null,
