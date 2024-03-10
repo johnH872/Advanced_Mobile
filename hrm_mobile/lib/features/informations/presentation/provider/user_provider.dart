@@ -1,5 +1,7 @@
 // ignore_for_file: empty_catches
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hrm_mobile/core/constants/enums.dart';
 import 'package:hrm_mobile/core/models/date_range_model.dart';
@@ -7,11 +9,13 @@ import 'package:hrm_mobile/core/models/filter_mapping.dart';
 import 'package:hrm_mobile/core/models/page_model.dart';
 import 'package:hrm_mobile/features/informations/domain/entity/user_entity.dart';
 import 'package:hrm_mobile/features/informations/domain/repository/employee_repository.dart';
+import 'package:hrm_mobile/features/informations/domain/repository/media_repository.dart';
 import 'package:hrm_mobile/injection_container.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 class UserProvider with ChangeNotifier {
   final EmployeeRepository employeeRepository = sl<EmployeeRepository>();
+  final MediaRepository mediaRepository = sl<MediaRepository>();
 
   List<UserEntity>? _userList = [];
   List<UserEntity>? get userLst => _userList;
@@ -115,5 +119,21 @@ class UserProvider with ChangeNotifier {
     isSaving = false;
     notifyListeners();
     return result;
+  }
+
+  Future<void> uploadProfileAvatar(File image, BuildContext context) async {
+    try {
+      isSaving = true;
+      final response = await mediaRepository.uploadProfileAvatar(loggedInUser?.userId ?? "", image);
+      if (response.error != null) {
+        if(context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed")));
+      }
+      if (response.data != null) {
+        loggedInUser = response.data?.result ?? loggedInUser;
+        if(context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Succeed")));
+      }
+    } catch (e) {}
+    isSaving = false;
+    notifyListeners();
   }
 }

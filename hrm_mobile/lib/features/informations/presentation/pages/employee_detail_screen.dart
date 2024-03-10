@@ -1,6 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +16,7 @@ import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hrm_mobile/features/informations/domain/entity/user_entity.dart';
 import 'package:hrm_mobile/features/informations/presentation/provider/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum SampleItem { itemOne, itemTwo, itemThree }
 
@@ -107,7 +111,7 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
                                 var result = await userProvider.saveEmployee(saveUser, widget.isMyProfile);
                                 if (result) {
                                   const snackBar = SnackBar(
-                                    content: Text('Successed'),
+                                    content: Text('Succeed'),
                                   );
                                   if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                 } else {
@@ -376,12 +380,23 @@ Widget _buildProfileHeader(BuildContext context, bool isMyProfile) {
           Flexible(
               flex: 5,
               child: Row(children: [
-                const CircleAvatar(
-                  backgroundColor: Colors.brown,
-                  radius: 36,
-                  child: Text(
-                    'DH',
-                    style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                GestureDetector(
+                  onTap: () async {
+                    final ImagePicker picker = ImagePicker();
+                    final XFile? xFile = await picker.pickImage(source: ImageSource.gallery);
+                    if(xFile != null) {
+                      File image = File(xFile.path);
+                      if(context.mounted) userProvider.uploadProfileAvatar(image, context);
+                    }
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: Colors.brown,
+                    radius: 36,
+                    backgroundImage: NetworkImage(isMyProfile ? userProvider.loggedInUser?.avatarUrl ?? "" : userProvider.currentUser?.avatarUrl ?? ""),
+                    // child: const Text(
+                    //   'DH',
+                    //   style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                    // ),
                   ),
                 ),
                 const SizedBox(
@@ -421,17 +436,29 @@ Widget _buildProfileHeader(BuildContext context, bool isMyProfile) {
                     initialValue: selectedItem,
                     onSelected: (SampleItem item) {},
                     itemBuilder: (BuildContext context) => <PopupMenuEntry<SampleItem>>[
-                      const PopupMenuItem<SampleItem>(
+                      PopupMenuItem<SampleItem>(
                         value: SampleItem.itemOne,
-                        child: Text('Call'),
+                        child: const Text('Call'),
+                        onTap: () async {
+                          var phoneNumber = isMyProfile ? userProvider.loggedInUser?.phoneNumber ?? "" : userProvider.currentUser?.phoneNumber ?? "";
+                          await openLaunchURL("phone", phoneNumber, context);
+                        },
                       ),
-                      const PopupMenuItem<SampleItem>(
+                      PopupMenuItem<SampleItem>(
                         value: SampleItem.itemTwo,
-                        child: Text('Text'),
+                        child: const Text('Text'),
+                        onTap: () async {
+                          var phoneNumber = isMyProfile ? userProvider.loggedInUser?.phoneNumber ?? "" : userProvider.currentUser?.phoneNumber ?? "";
+                          await openLaunchURL("text", phoneNumber, context);
+                        },
                       ),
-                      const PopupMenuItem<SampleItem>(
+                      PopupMenuItem<SampleItem>(
                         value: SampleItem.itemThree,
-                        child: Text('Send mail'),
+                        child: const Text('Send mail'),
+                        onTap: () async {
+                          var email = isMyProfile ? userProvider.loggedInUser?.email ?? "" : userProvider.currentUser?.email ?? "";
+                          await openLaunchURL("mail", email, context);
+                        },
                       ),
                     ],
                   ),
@@ -440,4 +467,39 @@ Widget _buildProfileHeader(BuildContext context, bool isMyProfile) {
       ),
     ),
   );
+}
+
+Future<void> openLaunchURL(String type, String contact, BuildContext context) async {
+  switch (type) {
+    case "phone":
+      if (contact.isNotEmpty) {
+        final Uri url = Uri.parse('tel:$contact');
+        if (!await launchUrl(url)) {
+          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch $url')));
+        }
+      } else if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No phone numer')));
+      }
+      break;
+    case "text":
+      if (contact.isNotEmpty) {
+        final Uri url = Uri.parse('sms:$contact');
+        if (!await launchUrl(url)) {
+          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch $url')));
+        }
+      } else if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No phone numer')));
+      }
+      break;
+    case "mail":
+      if (contact.isNotEmpty) {
+        final Uri url = Uri.parse('mailto:$contact');
+        if (!await launchUrl(url)) {
+          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch $url')));
+        }
+      } else if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No email')));
+      }
+      break;
+  }
 }

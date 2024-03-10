@@ -10,8 +10,11 @@ import 'package:hrm_mobile/features/auth/domain/usecases/validate_otp_usecase.da
 import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hrm_mobile/features/auth/presentation/bloc/cubit/app_cubit.dart';
 import 'package:hrm_mobile/features/informations/data/data_sources/employee_api_services.dart';
+import 'package:hrm_mobile/features/informations/data/data_sources/media_api_serivices.dart';
 import 'package:hrm_mobile/features/informations/data/repository/employee_repository_impl.dart';
+import 'package:hrm_mobile/features/informations/data/repository/media_repository_impl.dart';
 import 'package:hrm_mobile/features/informations/domain/repository/employee_repository.dart';
+import 'package:hrm_mobile/features/informations/domain/repository/media_repository.dart';
 import 'package:hrm_mobile/features/informations/presentation/provider/user_provider.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
@@ -24,6 +27,8 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<AuthRepository>(AuthRepositoryImpl(authApiService:  sl()));
   sl.registerSingleton<EmployeeApiService>(EmployeeApiService(sl()));
   sl.registerSingleton<EmployeeRepository>(EmployeeRepositoryImpl(employeeApiService:  sl()));
+  sl.registerSingleton<MediaApiService>(MediaApiService(sl()));
+  sl.registerSingleton<MediaRepository>(MediaRepositoryImpl(mediaApiService:  sl()));
   
   //UseCases
   sl.registerLazySingleton(() => LoginUseCase(authRepository: sl()));

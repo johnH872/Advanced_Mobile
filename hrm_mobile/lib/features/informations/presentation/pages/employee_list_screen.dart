@@ -115,6 +115,17 @@ class _ListEmployeeScreenState extends State<ListEmployeeScreen> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Header
+                Container(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: const  Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ) 
+                ),
+                // Body
                 ReactiveTextField(
                   formControlName: 'employeeName',
                   obscureText: false,
@@ -217,7 +228,7 @@ class _ListEmployeeScreenState extends State<ListEmployeeScreen> {
                       width: 15,
                     ),
                     FilledButton(
-                        onPressed: () async {
+                        onPressed: () {
                           userProvider.setFilter(_form);
                           if(mounted) Navigator.of(context).pop();
                         },
