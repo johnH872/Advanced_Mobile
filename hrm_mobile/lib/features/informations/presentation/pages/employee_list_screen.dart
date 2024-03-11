@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hrm_mobile/core/constants/constants.dart';
 import 'package:hrm_mobile/core/models/global_form.dart';
 import 'package:hrm_mobile/core/widgets/app_bar_widget.dart';
 import 'package:hrm_mobile/features/informations/presentation/pages/employee_detail_screen.dart';
@@ -87,9 +88,9 @@ class _ListEmployeeScreenState extends State<ListEmployeeScreen> {
                                       isMyProfile: false,
                                     )))
                           },
-                          leading: const CircleAvatar(
+                          leading: CircleAvatar(
                             radius: 24,
-                            child: Text('DH'),
+                            backgroundImage: NetworkImage(userProvider.userLst?[index].avatarUrl ?? defaultImageUrl)
                           ),
                           title: Text('${userProvider.userLst?[index].firstName ?? ""} ${userProvider.userLst?[index].middleName ?? ""} ${userProvider.userLst?[index].lastName ?? ""}'),
                           subtitle: Text(

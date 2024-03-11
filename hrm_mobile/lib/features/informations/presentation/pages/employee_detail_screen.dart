@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hrm_mobile/core/constants/constants.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -381,7 +382,7 @@ Widget _buildProfileHeader(BuildContext context, bool isMyProfile) {
               flex: 5,
               child: Row(children: [
                 GestureDetector(
-                  onTap: () async {
+                  onTap: (userProvider.isUploadingImage || !isMyProfile) ? null : () async {
                     final ImagePicker picker = ImagePicker();
                     final XFile? xFile = await picker.pickImage(source: ImageSource.gallery);
                     if(xFile != null) {
@@ -390,13 +391,11 @@ Widget _buildProfileHeader(BuildContext context, bool isMyProfile) {
                     }
                   },
                   child: CircleAvatar(
-                    backgroundColor: Colors.brown,
+                    backgroundColor: Colors.grey,
                     radius: 36,
-                    backgroundImage: NetworkImage(isMyProfile ? userProvider.loggedInUser?.avatarUrl ?? "" : userProvider.currentUser?.avatarUrl ?? ""),
-                    // child: const Text(
-                    //   'DH',
-                    //   style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
-                    // ),
+                    backgroundImage: 
+                    NetworkImage(isMyProfile ? userProvider.loggedInUser?.avatarUrl ?? defaultImageUrl : userProvider.currentUser?.avatarUrl ?? defaultImageUrl),
+                    child: userProvider.isUploadingImage ? const CircularProgressIndicator() : null
                   ),
                 ),
                 const SizedBox(

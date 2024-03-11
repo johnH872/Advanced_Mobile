@@ -26,6 +26,7 @@ class UserProvider with ChangeNotifier {
   PageModel? page = PageModel(size: 15, pageNumber: 0);
   bool isFirstLoading = true;
   bool isMaxOfList = false;
+  bool isUploadingImage = false;
 
   void resetList(value) {
     isFirstLoading = value;
@@ -123,7 +124,8 @@ class UserProvider with ChangeNotifier {
 
   Future<void> uploadProfileAvatar(File image, BuildContext context) async {
     try {
-      isSaving = true;
+      isUploadingImage = true;
+      notifyListeners();
       final response = await mediaRepository.uploadProfileAvatar(loggedInUser?.userId ?? "", image);
       if (response.error != null) {
         if(context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed")));
@@ -133,7 +135,7 @@ class UserProvider with ChangeNotifier {
         if(context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Succeed")));
       }
     } catch (e) {}
-    isSaving = false;
+    isUploadingImage = false;
     notifyListeners();
   }
 }
