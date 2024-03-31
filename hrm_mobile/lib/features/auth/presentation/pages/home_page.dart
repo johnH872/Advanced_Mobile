@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hrm_mobile/config/theme/color_schemes.g.dart';
+import 'package:hrm_mobile/features/attendance/presentation/pages/punch_in_out_webview.dart';
 import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,7 +15,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+  void initState() {
+    initData();
+    super.initState();
+  }
+
+  Future<void> initData() async {
+    final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
+    await leaveProvider.setUpData(null, context);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final leaveProvider = Provider.of<LeaveProvider>(context, listen: true);
     return Scaffold(
         backgroundColor: Colors.amber[50],
         body: SingleChildScrollView(
@@ -26,16 +41,21 @@ class _HomePageState extends State<HomePage> {
                       width: MediaQuery.of(context).size.width,
                       height: 254,
                       decoration: BoxDecoration(
-                        borderRadius:const BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
+                        borderRadius:
+                            const BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
                         color: lightColorScheme.primaryContainer,
                       ),
-                      child: Padding(padding: const EdgeInsets.only(right: 25, top: 40, left: 25, bottom: 20), child: _buildHeaderWidget()),
+                      child: Padding(
+                          padding: const EdgeInsets.only(right: 25, top: 40, left: 25, bottom: 20),
+                          child: _buildHeaderWidget()),
                     ),
                     Positioned(
                       top: 80.0,
                       left: 0.0,
                       right: 0.0,
-                      child: Padding(padding: const EdgeInsets.only(right: 25, top: 40, left: 25, bottom: 20), child: _builderPunchInOutCard()),
+                      child: Padding(
+                          padding: const EdgeInsets.only(right: 25, top: 40, left: 25, bottom: 20),
+                          child: _builderPunchInOutCard()),
                     ),
                   ],
                 ),
@@ -46,7 +66,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
-                child: _builderLeaveEntitlement(),
+                child: _builderLeaveEntitlement(leaveProvider),
               )
             ],
           ),
@@ -118,50 +138,80 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _builderPunchInOutCard() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-          child: Card(
-            color: Colors.white,
-            child: SizedBox(
-              width: 100,
-              height: 240,
-              child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Today\'s overview',
-                                style: TextStyle(color: Color.fromRGBO(72, 68, 67, 40), fontSize: 12, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '24 Junary 2024',
-                                style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          Icon(Icons.more_horiz, color: Colors.black)
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      _builderPunchedStatus(),
-                    ],
-                  )),
-            ),
-          ),
-        )
-      ],
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is LoggedOutState) {
+          Navigator.of(context).pushNamedAndRemoveUntil('/login', (r) => false);
+        }
+      },
+      builder: (context, state) {
+        if (state is! LoggedOutState) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                child: Card(
+                  color: Colors.white,
+                  child: SizedBox(
+                    width: 100,
+                    height: 242,
+                    child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Today\'s overview',
+                                      style: TextStyle(
+                                          color: Color.fromRGBO(72, 68, 67, 40),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      '24 Junary 2024',
+                                      style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                Ink(
+                                  decoration: const ShapeDecoration(
+                                    color: Color(0xFF44664D),
+                                    shape: CircleBorder(),
+                                  ),
+                                  child: IconButton(
+                                    icon: const Icon(Icons.alarm_add),
+                                    color: Colors.white,
+                                    onPressed: () => showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          const Dialog.fullscreen(child: PunchInOutWebView()),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            _builderPunchedStatus(),
+                          ],
+                        )),
+                  ),
+                ),
+              )
+            ],
+          );
+        } else {
+          return Container();
+        }
+      },
     );
   }
 
@@ -233,7 +283,11 @@ class _HomePageState extends State<HomePage> {
                       '05:00 PM',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    ButtonTheme(minWidth: 300, height: 100, child: FilledButton(onPressed: () {}, child: const Text('Not yet', style: TextStyle(fontSize: 12)))),
+                    ButtonTheme(
+                        minWidth: 300,
+                        height: 100,
+                        child: FilledButton(
+                            onPressed: () {}, child: const Text('Not yet', style: TextStyle(fontSize: 12)))),
                   ],
                 ),
               ),
@@ -241,22 +295,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ));
   }
-
-  // Widget _buildNavigationBar() {
-  //   int currentPageIndex = 0;
-  //   return NavigationBar(
-  //     onDestinationSelected: (int index) {
-  //       setState(() {
-  //         currentPageIndex = index;
-  //       });
-  //     },
-  //     indicatorColor: Colors.amber,
-  //     selectedIndex: currentPageIndex,
-  //     destinations: const <Widget>[
-
-  //     ],
-  //   );
-  // }
 
   Widget _builderButtonList(BuildContext context) {
     return Column(
@@ -345,7 +383,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           FloatingActionButton(
             onPressed: () {
-              if(url != null) Navigator.of(context).pushNamed(url);
+              if (url != null) Navigator.of(context).pushNamed(url);
             },
             backgroundColor: Colors.white,
             elevation: 1,
@@ -365,7 +403,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _builderLeaveEntitlement() {
+  Widget _builderLeaveEntitlement(LeaveProvider leaveProvider) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -411,7 +449,7 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      _builderLeaveEntitlementCard(),
+                      _builderLeaveEntitlementCard(leaveProvider),
                     ],
                   )),
             ),
@@ -421,7 +459,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _builderLeaveEntitlementCard() {
+  Widget _builderLeaveEntitlementCard(LeaveProvider leaveProvider) {
     return Container(
         width: 340,
         height: 120,
@@ -429,23 +467,31 @@ class _HomePageState extends State<HomePage> {
           borderRadius: BorderRadius.circular(16),
           color: const Color(0xff0A672A),
         ),
-        child: const Padding(
-          padding: EdgeInsets.all(20),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.max,
             children: [
-              Column(
+              const Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Text(
-                    'Leave entitilement',
+                    'Type',
                     style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Total',
+                    'Available',
+                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Used',
+                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Remain',
                     style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -454,44 +500,118 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Wrap(
+                  const Wrap(
                     spacing: 10,
                     children: [
                       Text(
-                        'Usable',
+                        'Annually',
                         style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Used',
+                        'Seniority',
                         style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Remain',
+                        'Transfer',
                         style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Budget',
+                        'UnPaid',
                         style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                   Wrap(
-                    spacing: 30,
+                    spacing: 35,
                     children: [
                       Text(
-                        '0',
+                        leaveProvider.myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'Annually')
+                            .firstOrNull
+                            ?.usableLeave
+                            ?.toString() ?? "0.0",
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        leaveProvider.myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'Seniority')
+                            .firstOrNull
+                            ?.usableLeave
+                            ?.toString() ?? "0.0",
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        leaveProvider.myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'Transfer')
+                            .firstOrNull
+                            ?.usableLeave
+                            ?.toString() ?? "0.0",
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        leaveProvider.myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'UnPaid')
+                            .firstOrNull
+                            ?.usableLeave
+                            ?.toString() ?? "0.0",
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  Wrap(
+                    spacing: 35,
+                    children: [
+                      Text(
+                        leaveProvider.myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'Annually')
+                            .firstOrNull
+                            ?.usedLeave
+                            ?.toString() ?? "0.0",
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        leaveProvider.myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'Seniority')
+                            .firstOrNull
+                            ?.usedLeave
+                            ?.toString() ?? "0.0",
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        leaveProvider.myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'Transfer')
+                            .firstOrNull
+                            ?.usedLeave
+                            ?.toString() ?? "0.0",
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        leaveProvider.myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'UnPaid')
+                            .firstOrNull
+                            ?.usedLeave
+                            ?.toString() ?? "0.0",
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const Wrap(
+                    spacing: 35,
+                    children: [
+                      Text(
+                        '0.0',
                         style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '0',
+                        '0.0',
                         style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '0',
+                        '0.0',
                         style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '0',
+                        '0.0',
                         style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                     ],

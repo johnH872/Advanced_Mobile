@@ -88,6 +88,19 @@ dependencies:
   #image
   image_picker: ^1.0.7
 
+  #camera
+  camera: ^0.10.5+9
+  path_provider: ^2.1.2
+
+  #iframe
+  universal_html: ^2.2.4 
+
+  #loading
+  loader_overlay: ^4.0.0
+
+  #webview
+  webview_flutter: ^4.5.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hrm_mobile/core/constants/constants.dart';
+import 'package:hrm_mobile/features/leave/presentation/pages/leave_request_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -63,15 +64,30 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    if ((widget.isMyProfile && userProvider.loggedInUser != null) || (!widget.isMyProfile && userProvider.currentUser != null)) {
+    if ((widget.isMyProfile && userProvider.loggedInUser != null) ||
+        (!widget.isMyProfile && userProvider.currentUser != null)) {
       _form = updateForm(_form, widget.isMyProfile ? userProvider.loggedInUser! : userProvider.currentUser!);
     }
     return ReactiveForm(
         formGroup: _form,
         child: Scaffold(
           appBar: CustomAppBar(
-              title: "Profile",
-              leadingIcon: widget.isMyProfile ? IconButton(icon: const Icon(Icons.menu), onPressed: () {}) : IconButton(icon: const Icon(Icons.keyboard_arrow_left), onPressed: () => {Provider.of<UserProvider>(context, listen: false).getEmployeePaging(), Navigator.of(context).pop()})),
+            title: "Profile",
+            leadingIcon: widget.isMyProfile
+                ? IconButton(icon: const Icon(Icons.menu), onPressed: () {})
+                : IconButton(
+                    icon: const Icon(Icons.keyboard_arrow_left),
+                    onPressed: () => {
+                          Provider.of<UserProvider>(context, listen: false).getEmployeePaging(),
+                          Navigator.of(context).pop()
+                        }),
+            button_1: !widget.isMyProfile ? IconButton(
+              icon: const Icon(Icons.assignment_return),
+              tooltip: 'refresh',
+              onPressed: () => showDialog(
+                  context: context, builder: (BuildContext context) => Dialog.fullscreen(child: LeaveRequestScreen(userEntity: widget.inputUser))),
+            ) : null,
+          ),
           body: SizedBox(
             child: Column(
               mainAxisSize: MainAxisSize.max,
@@ -107,8 +123,12 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
                                     dateStartConttract: _form.control('dateStartContract').value,
                                     email: _form.control('email').value,
                                     phoneNumber: _form.control('phoneNumber').value,
-                                    userId: widget.isMyProfile ? userProvider.loggedInUser!.userId : userProvider.currentUser!.userId,
-                                    ownerId: widget.isMyProfile ? userProvider.loggedInUser!.ownerId : userProvider.currentUser!.userId);
+                                    userId: widget.isMyProfile
+                                        ? userProvider.loggedInUser!.userId
+                                        : userProvider.currentUser!.userId,
+                                    ownerId: widget.isMyProfile
+                                        ? userProvider.loggedInUser!.ownerId
+                                        : userProvider.currentUser!.userId);
                                 var result = await userProvider.saveEmployee(saveUser, widget.isMyProfile);
                                 if (result) {
                                   const snackBar = SnackBar(
@@ -149,9 +169,6 @@ FormGroup updateForm(FormGroup form, UserEntity entity) {
 
 Widget _buildProfileEditor(BuildContext context, FormGroup form, bool isMyProfile) {
   final userProvider = Provider.of<UserProvider>(context);
-  // Future<void> selectDate() async {
-  //   await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2100));
-  // }
 
   return userProvider.isLoading
       ? const Center(
@@ -382,45 +399,52 @@ Widget _buildProfileHeader(BuildContext context, bool isMyProfile) {
               flex: 5,
               child: Row(children: [
                 GestureDetector(
-                  onTap: (userProvider.isUploadingImage || !isMyProfile) ? null : () async {
-                    final ImagePicker picker = ImagePicker();
-                    final XFile? xFile = await picker.pickImage(source: ImageSource.gallery);
-                    if(xFile != null) {
-                      File image = File(xFile.path);
-                      if(context.mounted) userProvider.uploadProfileAvatar(image, context);
-                    }
-                  },
+                  onTap: (userProvider.isUploadingImage || !isMyProfile)
+                      ? null
+                      : () async {
+                          final ImagePicker picker = ImagePicker();
+                          final XFile? xFile = await picker.pickImage(source: ImageSource.gallery);
+                          if (xFile != null) {
+                            File image = File(xFile.path);
+                            if (context.mounted) userProvider.uploadProfileAvatar(image, context);
+                          }
+                        },
                   child: CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    radius: 36,
-                    backgroundImage: 
-                    NetworkImage(isMyProfile ? userProvider.loggedInUser?.avatarUrl ?? defaultImageUrl : userProvider.currentUser?.avatarUrl ?? defaultImageUrl),
-                    child: userProvider.isUploadingImage ? const CircularProgressIndicator() : null
-                  ),
+                      backgroundColor: Colors.grey,
+                      radius: 36,
+                      backgroundImage: NetworkImage(isMyProfile
+                          ? userProvider.loggedInUser?.avatarUrl ?? defaultImageUrl
+                          : userProvider.currentUser?.avatarUrl ?? defaultImageUrl),
+                      child: userProvider.isUploadingImage ? const CircularProgressIndicator() : null),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Expanded(child: BlocBuilder<AuthBloc, AuthState>(builder: (_, state) {
                   if (state is LoggedInState) {
-                    return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                      Text(
-                          isMyProfile
-                              ? '${userProvider.loggedInUser!.firstName ?? ""} ${userProvider.loggedInUser!.middleName ?? ""} ${userProvider.loggedInUser!.lastName ?? ""}'
-                              : '${userProvider.currentUser!.firstName ?? ""} ${userProvider.currentUser!.middleName ?? ""} ${userProvider.currentUser!.lastName ?? ""}',
-                          style: const TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
-                          overflow: TextOverflow.ellipsis),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      Text(
-                        isMyProfile ? userProvider.loggedInUser!.jobTitle ?? "No position" : userProvider.currentUser!.jobTitle ?? "No position",
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                        ),
-                      )
-                    ]);
+                    return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                              isMyProfile
+                                  ? '${userProvider.loggedInUser!.firstName ?? ""} ${userProvider.loggedInUser!.middleName ?? ""} ${userProvider.loggedInUser!.lastName ?? ""}'
+                                  : '${userProvider.currentUser!.firstName ?? ""} ${userProvider.currentUser!.middleName ?? ""} ${userProvider.currentUser!.lastName ?? ""}',
+                              style: const TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Text(
+                            isMyProfile
+                                ? userProvider.loggedInUser!.jobTitle ?? "No position"
+                                : userProvider.currentUser!.jobTitle ?? "No position",
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                            ),
+                          )
+                        ]);
                   } else {
                     return Container();
                   }
@@ -439,7 +463,9 @@ Widget _buildProfileHeader(BuildContext context, bool isMyProfile) {
                         value: SampleItem.itemOne,
                         child: const Text('Call'),
                         onTap: () async {
-                          var phoneNumber = isMyProfile ? userProvider.loggedInUser?.phoneNumber ?? "" : userProvider.currentUser?.phoneNumber ?? "";
+                          var phoneNumber = isMyProfile
+                              ? userProvider.loggedInUser?.phoneNumber ?? ""
+                              : userProvider.currentUser?.phoneNumber ?? "";
                           await openLaunchURL("phone", phoneNumber, context);
                         },
                       ),
@@ -447,7 +473,9 @@ Widget _buildProfileHeader(BuildContext context, bool isMyProfile) {
                         value: SampleItem.itemTwo,
                         child: const Text('Text'),
                         onTap: () async {
-                          var phoneNumber = isMyProfile ? userProvider.loggedInUser?.phoneNumber ?? "" : userProvider.currentUser?.phoneNumber ?? "";
+                          var phoneNumber = isMyProfile
+                              ? userProvider.loggedInUser?.phoneNumber ?? ""
+                              : userProvider.currentUser?.phoneNumber ?? "";
                           await openLaunchURL("text", phoneNumber, context);
                         },
                       ),
@@ -455,7 +483,9 @@ Widget _buildProfileHeader(BuildContext context, bool isMyProfile) {
                         value: SampleItem.itemThree,
                         child: const Text('Send mail'),
                         onTap: () async {
-                          var email = isMyProfile ? userProvider.loggedInUser?.email ?? "" : userProvider.currentUser?.email ?? "";
+                          var email = isMyProfile
+                              ? userProvider.loggedInUser?.email ?? ""
+                              : userProvider.currentUser?.email ?? "";
                           await openLaunchURL("mail", email, context);
                         },
                       ),
@@ -474,7 +504,8 @@ Future<void> openLaunchURL(String type, String contact, BuildContext context) as
       if (contact.isNotEmpty) {
         final Uri url = Uri.parse('tel:$contact');
         if (!await launchUrl(url)) {
-          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch $url')));
+          if (context.mounted)
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch $url')));
         }
       } else if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No phone numer')));
@@ -484,7 +515,8 @@ Future<void> openLaunchURL(String type, String contact, BuildContext context) as
       if (contact.isNotEmpty) {
         final Uri url = Uri.parse('sms:$contact');
         if (!await launchUrl(url)) {
-          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch $url')));
+          if (context.mounted)
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch $url')));
         }
       } else if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No phone numer')));
@@ -494,7 +526,8 @@ Future<void> openLaunchURL(String type, String contact, BuildContext context) as
       if (contact.isNotEmpty) {
         final Uri url = Uri.parse('mailto:$contact');
         if (!await launchUrl(url)) {
-          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch $url')));
+          if (context.mounted)
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch $url')));
         }
       } else if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No email')));

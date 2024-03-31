@@ -17,7 +17,7 @@ class EmployeeRepositoryImpl extends EmployeeRepository {
   });
 
   @override
-  Future<DataState<ServiceResponse<PagedData<List<UserModel>>>>> getEmployeePaging(PageModel page) async {
+  Future<DataState<ServiceResponse<PagedData<List<UserEntity>>>>> getEmployeePaging(PageModel page) async {
     try {
       final httpResponse = await employeeApiService.getEmployeePaging(page.toJson());
       

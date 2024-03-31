@@ -5,6 +5,8 @@ import 'package:hrm_mobile/features/auth/presentation/pages/auth/login_screen.da
 import 'package:hrm_mobile/features/auth/presentation/pages/auth/request_password_screen.dart';
 import 'package:hrm_mobile/features/auth/presentation/pages/auth/validate_otp_screen.dart';
 import 'package:hrm_mobile/features/informations/presentation/pages/employee_list_screen.dart';
+import 'package:hrm_mobile/features/leave/presentation/pages/leave_request_history_screen.dart';
+import 'package:hrm_mobile/features/leave/presentation/pages/leave_request_screen.dart';
 
 class AppRoutes {
   static Route onGenerateRoutes(RouteSettings settings) {
@@ -34,6 +36,11 @@ class AppRoutes {
       case '/list-employee':
         return _materialRoute(const ListEmployeeScreen());
 
+      case '/leave-history':
+        return _materialRoute(const LeaveRequestHistoryScreen());
+      
+      case '/leave-request':
+        return _materialRoute(const LeaveRequestScreen());
 
       default:
         return _materialRoute(const LoginScreen());

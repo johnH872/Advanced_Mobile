@@ -25,7 +25,7 @@ class _AppNavigatorState extends State<AppNavigator> {
       child: BlocBuilder<AppCubit, AppState>(
           builder: (context, stt) {
             return Scaffold(
-              backgroundColor: Colors.amber[50],
+              // backgroundColor: Colors.amber[50],
               body: AnimatedSwitcher(
                 duration: const Duration(microseconds: 300),
                 child: bottomNavigationScreens().elementAt(stt.pageIndex),

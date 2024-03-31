@@ -9,3 +9,9 @@ enum FilterOperator {
   substring,
   contains,
 }
+
+enum LeaveActionType { 
+  submitLeave,
+  assignLeave,
+}
+

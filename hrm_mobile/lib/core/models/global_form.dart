@@ -39,3 +39,21 @@ FormGroup get employeeFilterForm => FormGroup({
       'jobTitle': FormControl<String>(),
       'dateStartContract': FormControl<DateTimeRange>(),
     });
+
+FormGroup get leaveReuestFilterForm => FormGroup({
+      'leaveDateFrom': FormControl<DateTime>(),
+      'leaveDateTo': FormControl<DateTime>(),
+      'leaveEntitlementId': FormControl<int>(),
+      'session': FormControl<String>(),
+      'numberOfHour': FormControl<double>(),
+      'status': FormControl<String>(),
+      'note': FormControl<String>(),
+      'reason': FormControl<String>(),
+    });
+
+FormGroup get dateRangeForm => FormGroup({
+      'start': FormControl<DateTime>(validators: [Validators.required]),
+      'end': FormControl<DateTime>(validators: [Validators.required]),
+    }, validators: [
+      const CompareValidator('start', 'end', CompareOption.lower)
+    ]);

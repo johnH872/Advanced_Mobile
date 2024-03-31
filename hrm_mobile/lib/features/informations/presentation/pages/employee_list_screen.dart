@@ -43,66 +43,65 @@ class _ListEmployeeScreenState extends State<ListEmployeeScreen> {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: true);
     return Scaffold(
-        appBar: CustomAppBar(
-          title: "Employees",
-          leadingIcon: IconButton(
-            icon: const Icon(Icons.keyboard_arrow_left),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          button_1: IconButton(
-            icon: const Icon(Icons.filter_list_alt),
-            tooltip: 'Filter',
-            onPressed: () => showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => Dialog.fullscreen(child: _buildFilterDialog()),
-            ),
+      appBar: CustomAppBar(
+        title: "Employees",
+        leadingIcon: IconButton(
+          icon: const Icon(Icons.keyboard_arrow_left),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        button_1: IconButton(
+          icon: const Icon(Icons.filter_list_alt),
+          tooltip: 'Filter',
+          onPressed: () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => Dialog.fullscreen(child: _buildFilterDialog()),
           ),
         ),
-        body: userProvider.isLoading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : ListView.builder(
-                itemCount: !userProvider.isLoading
-                    ? userProvider.userLst != null
-                        ? userProvider.userLst!.length
-                        : 0
-                    : 0,
-                controller: _sc,
-                itemBuilder: (_, index) {
-                  if (index == userProvider.userLst!.length && !userProvider.isMaxOfList) {
-                    return const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Center(
-                        child: LinearProgressIndicator(),
-                      ),
-                    );
-                  } else {
-                    return Column(
-                      children: [
-                        ListTile(
-                          onTap: () => {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) => EmployeeDetailScreen(
-                                      inputUser: userProvider.userLst?[index],
-                                      isMyProfile: false,
-                                    )))
-                          },
-                          leading: CircleAvatar(
-                            radius: 24,
-                            backgroundImage: NetworkImage(userProvider.userLst?[index].avatarUrl ?? defaultImageUrl)
-                          ),
-                          title: Text('${userProvider.userLst?[index].firstName ?? ""} ${userProvider.userLst?[index].middleName ?? ""} ${userProvider.userLst?[index].lastName ?? ""}'),
-                          subtitle: Text(
-                            userProvider.userLst?[index].jobTitle ?? "No position",
-                            style: const TextStyle(color: Color(0xFF4B4639)),
-                          ),
+      ),
+      body: userProvider.isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView.separated(
+              itemCount: !userProvider.isLoading
+                  ? userProvider.userLst != null
+                      ? userProvider.userLst!.length
+                      : 0
+                  : 0,
+              controller: _sc,
+              itemBuilder: (_, index) {
+                if (index == userProvider.userLst!.length && !userProvider.isMaxOfList) {
+                  return const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Center(
+                      child: LinearProgressIndicator(),
+                    ),
+                  );
+                } else {
+                  return Column(
+                    children: [
+                      ListTile(
+                        onTap: () => {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => EmployeeDetailScreen(
+                                    inputUser: userProvider.userLst?[index],
+                                    isMyProfile: false,
+                                  )))
+                        },
+                        leading: CircleAvatar(radius: 24, backgroundImage: NetworkImage(userProvider.userLst?[index].avatarUrl ?? defaultImageUrl)),
+                        title: Text('${userProvider.userLst?[index].firstName ?? ""} ${userProvider.userLst?[index].middleName ?? ""} ${userProvider.userLst?[index].lastName ?? ""}'),
+                        subtitle: Text(
+                          userProvider.userLst?[index].jobTitle ?? "No position",
+                          style: const TextStyle(color: Color(0xFF4B4639)),
                         ),
-                        const Divider(height: 0),
-                      ],
-                    );
-                  }
-                }));
+                      ),
+                    ],
+                  );
+                }
+              },
+              separatorBuilder: (BuildContext context, int index) => const Divider(),
+            ),
+    );
   }
 
   Widget _buildFilterDialog() {
@@ -118,14 +117,13 @@ class _ListEmployeeScreenState extends State<ListEmployeeScreen> {
               children: [
                 // Header
                 Container(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    icon: const  Icon(Icons.close),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ) 
-                ),
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )),
                 // Body
                 ReactiveTextField(
                   formControlName: 'employeeName',
@@ -219,19 +217,21 @@ class _ListEmployeeScreenState extends State<ListEmployeeScreen> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    OutlinedButton(onPressed: () {
-                      userProvider.resetList(true);
-                      _form.reset();
-                      birthDateRangeController.clear();
-                      dateStartContractController.clear();
-                    }, child: const Text("RESET")),
+                    OutlinedButton(
+                        onPressed: () {
+                          userProvider.resetList(true);
+                          _form.reset();
+                          birthDateRangeController.clear();
+                          dateStartContractController.clear();
+                        },
+                        child: const Text("RESET")),
                     const SizedBox(
                       width: 15,
                     ),
                     FilledButton(
                         onPressed: () {
                           userProvider.setFilter(_form);
-                          if(mounted) Navigator.of(context).pop();
+                          if (mounted) Navigator.of(context).pop();
                         },
                         child: const Text("SEARCH"))
                   ],
