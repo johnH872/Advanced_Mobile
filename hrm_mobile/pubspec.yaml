@@ -101,6 +101,9 @@ dependencies:
   #webview
   webview_flutter: ^4.5.0
 
+  #chart
+  fl_chart: ^0.67.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

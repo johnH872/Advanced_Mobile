@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hrm_mobile/core/util/common.dart';
 import 'package:hrm_mobile/core/widgets/app_bar_widget.dart';
 import 'package:hrm_mobile/features/leave/presentation/pages/leave_request_screen.dart';
 import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
@@ -17,13 +18,17 @@ class _LeaveRequestHistoryScreenState extends State<LeaveRequestHistoryScreen> {
   late SharedPreferences prefs;
   final TextEditingController filterDateRangeController = TextEditingController();
   late DateTimeRange? globalDateRangePicked;
+  final CommonUtil commonUtil = CommonUtil();
 
   @override
   void initState() {
     var currentDate = DateTime.now();
+    var monday = currentDate.subtract(Duration(days: currentDate.weekday - 1));
+    var sunday = currentDate.add(const Duration(days: DateTime.sunday - 1));
+
     globalDateRangePicked = DateTimeRange(
-        start: DateTime(currentDate.year, currentDate.month, currentDate.day, 0, 00),
-        end: DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59));
+        start: DateTime(monday.year, monday.month, monday.day, 0, 00),
+        end: DateTime(sunday.year, sunday.month, sunday.day, 23, 59));
     filterDateRangeController.text =
         '${DateFormat('dd/MM/yyyy').format(globalDateRangePicked!.start)} - ${DateFormat('dd/MM/yyyy').format(globalDateRangePicked!.end)}';
     initData(globalDateRangePicked);
@@ -119,7 +124,7 @@ class _LeaveRequestHistoryScreenState extends State<LeaveRequestHistoryScreen> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         )),
                     Expanded(flex: 1, child: Text("To", style: TextStyle(fontWeight: FontWeight.bold))),
-                    Flexible(flex: 0, child: Text("Status   ", style: TextStyle(fontWeight: FontWeight.bold))),
+                    Flexible(flex: 0, child: Text("Status     ", style: TextStyle(fontWeight: FontWeight.bold))),
                   ]),
                 )),
             Expanded(
@@ -150,7 +155,20 @@ class _LeaveRequestHistoryScreenState extends State<LeaveRequestHistoryScreen> {
                                 DateFormat('dd MMM, yy')
                                     .format(leaveProvider.myListLeaveRequest[index].leaveDateTo ?? DateTime.now()),
                                 style: const TextStyle(color: Colors.black))),
-                        const Flexible(flex: 0, child: Text("Status   ", style: TextStyle(color: Colors.black))),
+                        Flexible(
+                          flex: 0,
+                          child: Chip(
+                            elevation: 9,
+                            side: BorderSide.none,
+                            padding: const EdgeInsets.all(0),
+                              label: Text(
+                                  commonUtil.capitalizeFirstLettere(
+                                      leaveProvider.myListLeaveRequest[index].DataState?.dataStateName ?? ""),
+                                  style: TextStyle(
+                                      color: commonUtil
+                                          .hexToColor(leaveProvider.myListLeaveRequest[index].DataState?.colorCode),
+                                      fontWeight: FontWeight.bold, fontSize: 12))),
+                        )
                       ]));
                 },
                 separatorBuilder: (BuildContext context, int index) => const Divider(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hrm_mobile/features/attendance/presentation/pages/anttendance_dashboard_screen.dart';
+import 'package:hrm_mobile/features/attendance/presentation/pages/attendance_dashboard_screen.dart';
 import 'package:hrm_mobile/features/auth/presentation/pages/home_page.dart';
 import 'package:hrm_mobile/features/informations/presentation/pages/employee_detail_screen.dart';
 import 'package:hrm_mobile/features/leave/presentation/pages/leave_request_history_screen.dart';

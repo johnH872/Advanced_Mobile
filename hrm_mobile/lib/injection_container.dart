@@ -20,12 +20,15 @@ import 'package:hrm_mobile/features/informations/data/repository/media_repositor
 import 'package:hrm_mobile/features/informations/domain/repository/employee_repository.dart';
 import 'package:hrm_mobile/features/informations/domain/repository/media_repository.dart';
 import 'package:hrm_mobile/features/informations/presentation/provider/user_provider.dart';
+import 'package:hrm_mobile/features/leave/data/data_sources/datastate_api_services.dart';
 import 'package:hrm_mobile/features/leave/data/data_sources/leave_entitlement_api_services.dart';
 import 'package:hrm_mobile/features/leave/data/data_sources/leave_request_api_services.dart';
 import 'package:hrm_mobile/features/leave/data/data_sources/leave_type_api_services.dart';
+import 'package:hrm_mobile/features/leave/data/repository/datastate_repository_impl.dart';
 import 'package:hrm_mobile/features/leave/data/repository/leave_entitlement_repository_impl.dart';
 import 'package:hrm_mobile/features/leave/data/repository/leave_request_repository_impl.dart';
 import 'package:hrm_mobile/features/leave/data/repository/leave_type_repository_impl.dart';
+import 'package:hrm_mobile/features/leave/domain/repository/datastate_repository.dart';
 import 'package:hrm_mobile/features/leave/domain/repository/leave_entitlement_repository.dart';
 import 'package:hrm_mobile/features/leave/domain/repository/leave_request_repository.dart';
 import 'package:hrm_mobile/features/leave/domain/repository/leave_type_repository.dart';
@@ -51,6 +54,8 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<LeaveRequestRepository>(LeaveRequestRepositoryImpl(leaveRequestApiService:  sl()));
   sl.registerSingleton<LeaveEntitlementApiService>(LeaveEntitlementApiService(sl()));
   sl.registerSingleton<LeaveEntitlementRepository>(LeaveEntitlementRepositoryImpl(leaveEntitlementApiService:  sl()));
+  sl.registerSingleton<DataStateApiService>(DataStateApiService(sl()));
+  sl.registerSingleton<DataStateRepository>(DataStateRepositoryImpl(dataStateApiService:  sl()));
   
   //UseCases
   sl.registerLazySingleton(() => LoginUseCase(authRepository: sl()));

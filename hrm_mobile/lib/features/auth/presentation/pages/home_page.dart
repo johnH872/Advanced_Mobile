@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hrm_mobile/config/theme/color_schemes.g.dart';
 import 'package:hrm_mobile/features/attendance/presentation/pages/punch_in_out_webview.dart';
+import 'package:hrm_mobile/features/attendance/presentation/provider/attendance_provider.dart';
 import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,6 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final DateTime globalCurrentDay = DateTime.now();
   @override
   void initState() {
     initData();
@@ -163,11 +166,11 @@ class _HomePageState extends State<HomePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Column(
+                                Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
+                                    const Text(
                                       'Today\'s overview',
                                       style: TextStyle(
                                           color: Color.fromRGBO(72, 68, 67, 40),
@@ -175,8 +178,9 @@ class _HomePageState extends State<HomePage> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      '24 Junary 2024',
-                                      style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+                                      DateFormat("dd MMMM yyyy").format(globalCurrentDay),
+                                      style: const TextStyle(
+                                          color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
                                     ),
                                   ],
                                 ),
@@ -216,6 +220,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _builderPunchedStatus() {
+    final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: true);
     return Container(
         width: 340,
         height: 144,
@@ -244,15 +249,19 @@ class _HomePageState extends State<HomePage> {
                       height: 5,
                     ),
                     const Text(
-                      '08:00 AM',
+                      '08:30 AM',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    OutlinedButton(
+                    attendanceProvider.punchInRecords.isEmpty ? ButtonTheme(
+                        minWidth: 300,
+                        height: 100,
+                        child: FilledButton(
+                            onPressed: () {}, child: const Text('Not yet', style: TextStyle(fontSize: 12)))) :OutlinedButton(
                         onPressed: () {},
-                        child: const Text(
-                          'Done at 07:58',
-                          style: TextStyle(fontSize: 12),
-                        ))
+                        child: Text(
+                          DateFormat("HH:mm").format(attendanceProvider.punchInRecords[attendanceProvider.punchoutRecords.length - 1]),
+                          style: const TextStyle(fontSize: 12),
+                        )),
                   ],
                 ),
               ),
@@ -280,14 +289,19 @@ class _HomePageState extends State<HomePage> {
                       height: 5,
                     ),
                     const Text(
-                      '05:00 PM',
+                      '05:30 PM',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    ButtonTheme(
+                    attendanceProvider.punchoutRecords.isEmpty ? ButtonTheme(
                         minWidth: 300,
                         height: 100,
                         child: FilledButton(
-                            onPressed: () {}, child: const Text('Not yet', style: TextStyle(fontSize: 12)))),
+                            onPressed: () {}, child: const Text('Not yet', style: TextStyle(fontSize: 12)))) :OutlinedButton(
+                        onPressed: () {},
+                        child: Text(
+                          DateFormat("HH:mm").format(attendanceProvider.punchoutRecords[attendanceProvider.punchoutRecords.length - 1]),
+                          style: const TextStyle(fontSize: 12),
+                        )),
                   ],
                 ),
               ),
@@ -306,9 +320,9 @@ class _HomePageState extends State<HomePage> {
           children: [
             _builderButtonFab(
                 context,
-                "Time off",
+                "Reports",
                 const Icon(
-                  Icons.next_week,
+                  Icons.analytics,
                   color: Color(0xff389151),
                 ),
                 null),
@@ -354,9 +368,9 @@ class _HomePageState extends State<HomePage> {
                 null),
             _builderButtonFab(
                 context,
-                "Recruitment",
+                "Working days",
                 const Icon(
-                  Icons.person_add,
+                  Icons.edit_calendar_outlined,
                   color: Color(0xffAB933F),
                 ),
                 null),
@@ -417,11 +431,11 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.all(15),
                   child: Column(
                     children: [
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Icon(Icons.timelapse),
@@ -437,13 +451,13 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          FilledButton(
-                            onPressed: () {},
-                            style: const ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(Color(0xff389151)),
-                            ),
-                            child: const Text('Submit leave', style: TextStyle(fontSize: 12)),
-                          )
+                          // FilledButton(
+                          //   onPressed: () {},
+                          //   style: const ButtonStyle(
+                          //     backgroundColor: MaterialStatePropertyAll<Color>(Color(0xff389151)),
+                          //   ),
+                          //   child: const Text('Submit leave', style: TextStyle(fontSize: 12)),
+                          // )
                         ],
                       ),
                       const SizedBox(
@@ -526,34 +540,38 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Text(
                         leaveProvider.myListLeaveEntilement
-                            .where((element) => element.LeaveType?.leaveTypeName == 'Annually')
-                            .firstOrNull
-                            ?.usableLeave
-                            ?.toString() ?? "0.0",
+                                .where((element) => element.LeaveType?.leaveTypeName == 'Annually')
+                                .firstOrNull
+                                ?.usableLeave
+                                ?.toString() ??
+                            "0.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         leaveProvider.myListLeaveEntilement
-                            .where((element) => element.LeaveType?.leaveTypeName == 'Seniority')
-                            .firstOrNull
-                            ?.usableLeave
-                            ?.toString() ?? "0.0",
+                                .where((element) => element.LeaveType?.leaveTypeName == 'Seniority')
+                                .firstOrNull
+                                ?.usableLeave
+                                ?.toString() ??
+                            "0.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         leaveProvider.myListLeaveEntilement
-                            .where((element) => element.LeaveType?.leaveTypeName == 'Transfer')
-                            .firstOrNull
-                            ?.usableLeave
-                            ?.toString() ?? "0.0",
+                                .where((element) => element.LeaveType?.leaveTypeName == 'Transfer')
+                                .firstOrNull
+                                ?.usableLeave
+                                ?.toString() ??
+                            "0.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         leaveProvider.myListLeaveEntilement
-                            .where((element) => element.LeaveType?.leaveTypeName == 'UnPaid')
-                            .firstOrNull
-                            ?.usableLeave
-                            ?.toString() ?? "0.0",
+                                .where((element) => element.LeaveType?.leaveTypeName == 'UnPaid')
+                                .firstOrNull
+                                ?.usableLeave
+                                ?.toString() ??
+                            "0.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -563,34 +581,38 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Text(
                         leaveProvider.myListLeaveEntilement
-                            .where((element) => element.LeaveType?.leaveTypeName == 'Annually')
-                            .firstOrNull
-                            ?.usedLeave
-                            ?.toString() ?? "0.0",
+                                .where((element) => element.LeaveType?.leaveTypeName == 'Annually')
+                                .firstOrNull
+                                ?.usedLeave
+                                ?.toString() ??
+                            "0.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         leaveProvider.myListLeaveEntilement
-                            .where((element) => element.LeaveType?.leaveTypeName == 'Seniority')
-                            .firstOrNull
-                            ?.usedLeave
-                            ?.toString() ?? "0.0",
+                                .where((element) => element.LeaveType?.leaveTypeName == 'Seniority')
+                                .firstOrNull
+                                ?.usedLeave
+                                ?.toString() ??
+                            "0.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         leaveProvider.myListLeaveEntilement
-                            .where((element) => element.LeaveType?.leaveTypeName == 'Transfer')
-                            .firstOrNull
-                            ?.usedLeave
-                            ?.toString() ?? "0.0",
+                                .where((element) => element.LeaveType?.leaveTypeName == 'Transfer')
+                                .firstOrNull
+                                ?.usedLeave
+                                ?.toString() ??
+                            "0.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         leaveProvider.myListLeaveEntilement
-                            .where((element) => element.LeaveType?.leaveTypeName == 'UnPaid')
-                            .firstOrNull
-                            ?.usedLeave
-                            ?.toString() ?? "0.0",
+                                .where((element) => element.LeaveType?.leaveTypeName == 'UnPaid')
+                                .firstOrNull
+                                ?.usedLeave
+                                ?.toString() ??
+                            "0.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                     ],
