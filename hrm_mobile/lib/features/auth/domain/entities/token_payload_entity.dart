@@ -9,7 +9,7 @@ class TokenPayLoadEntity extends Equatable {
   final String? jobTitle;
   final String? ownerId;
   final String? avatarUrl;
-  final List<String>? roles;
+  final List<dynamic>? roles;
 
   const TokenPayLoadEntity({
     this.userId,
@@ -33,7 +33,7 @@ class TokenPayLoadEntity extends Equatable {
       jobTitle: json['jobTitle'] as String?,
       ownerId: json['ownerId'] as String?,
       avatarUrl: json['avatarUrl'] as String?,
-      roles: (json['roles'] as List?)?.map((e) => e as String).toList(),
+      roles: (json['roles'] as List?)?.map((e) => e).toList(),
     );
   }
 

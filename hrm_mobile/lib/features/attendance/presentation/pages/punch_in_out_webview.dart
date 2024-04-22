@@ -27,14 +27,14 @@ class _PunchInOutWebViewState extends State<PunchInOutWebView> {
           onPageFinished: (String url) {},
           onWebResourceError: (WebResourceError error) {},
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
+            if (request.url.startsWith('https://192.168.1.7:4200/face')) {
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
           },
         ),
       )
-      ..loadRequest(Uri.parse('http://10.0.2.2:4200'));
+      ..loadRequest(Uri.parse('https://192.168.1.7:4200/face'));
     webViewWidget = WebViewWidget(controller: controller);
     // if (WebViewPlatform.instance is WebKitWebViewPlatform) {
     //   final WebKitWebViewWidget webKitWidget = webViewWidget.platform as WebKitWebViewWidget;

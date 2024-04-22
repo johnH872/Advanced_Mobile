@@ -615,7 +615,7 @@ class _LeaveRequestScreenState extends State<LeaveRequestScreen> {
                     onPressed: () async {
                       await leaveProvider.saveLeaveRequest(context);
                     },
-                    child: Text(isEditOption ? "Change leave info" : "Submit leave"),
+                    child: Text( leaveActionType == LeaveActionType.submitLeave ? isEditOption ? "Change leave info" : "Submit leave" : "Assign leave"),
                   )));
   }
 }

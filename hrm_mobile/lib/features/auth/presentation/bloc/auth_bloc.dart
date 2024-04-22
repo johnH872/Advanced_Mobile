@@ -105,7 +105,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
       }
     // ignore: empty_catches
-    } catch (error) {}
+    } catch (error) {
+      print(error);
+    }
     return payload;
   }
 

@@ -20,15 +20,17 @@ class AttendanceProvider with ChangeNotifier {
     try {
       isLoading = true;
       DateTime currentDateTime = DateTime.now();
-      DateRangeModel dateRangeModel = DateRangeModel(start: currentDateTime, end: currentDateTime);
+      DateTime startDate =  DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 0, 00);
+      DateTime endDate =  DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 23, 59);
+      DateRangeModel dateRangeModel = DateRangeModel(start: startDate, end: endDate);
       final response = await attendanceRepository.getAttendanceByEmployeeId(dateRangeModel, userId!);
       if (response.data != null) {
         _todayAttendance = response.data?.result ?? [];
         punchInRecords = [];
         punchoutRecords = [];
         for (var attendance in _todayAttendance) {
-          if(attendance.punchinDate != null) punchInRecords.add(attendance.punchinDate!);
-          if(attendance.punchoutDate != null) punchoutRecords.add(attendance.punchoutDate!);
+          if(attendance.punchinDate != null) punchInRecords.add(attendance.punchinDate!.toLocal());
+          if(attendance.punchoutDate != null) punchoutRecords.add(attendance.punchoutDate!.toLocal());
         }
         if(_todayAttendance[0].punchoutDate != null) isPunchIn = false;
       }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hrm_mobile/config/theme/color_schemes.g.dart';
-import 'package:hrm_mobile/features/attendance/presentation/pages/punch_in_out_webview.dart';
+import 'package:hrm_mobile/core/constants/constants.dart';
+import 'package:hrm_mobile/core/util/payload_util.dart';
 import 'package:hrm_mobile/features/attendance/presentation/provider/attendance_provider.dart';
 import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
@@ -17,6 +18,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final DateTime globalCurrentDay = DateTime.now();
+  final payloadUtil = PayloadUtil();
   @override
   void initState() {
     initData();
@@ -24,8 +26,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> initData() async {
+    var userId = await payloadUtil.getUserId();
+    if(!context.mounted) return;
     final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
+    final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: false);
     await leaveProvider.setUpData(null, context);
+    await attendanceProvider.getCurrentAttendance(userId);
   }
 
   @override
@@ -101,13 +107,10 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(
                     width: 10,
                   ),
-                  const CircleAvatar(
-                    backgroundColor: Colors.brown,
+                  CircleAvatar(
+                    backgroundColor: Colors.grey,
                     radius: 24,
-                    child: Text(
-                      'MD',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
+                    backgroundImage: NetworkImage(state.tokenPayLoadEntity!.avatarUrl ?? defaultImageUrl),
                   ),
                   const SizedBox(
                     width: 10,
@@ -184,21 +187,16 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ],
                                 ),
-                                Ink(
-                                  decoration: const ShapeDecoration(
-                                    color: Color(0xFF44664D),
-                                    shape: CircleBorder(),
-                                  ),
-                                  child: IconButton(
-                                    icon: const Icon(Icons.alarm_add),
-                                    color: Colors.white,
-                                    onPressed: () => showDialog<String>(
-                                      context: context,
-                                      builder: (BuildContext context) =>
-                                          const Dialog.fullscreen(child: PunchInOutWebView()),
-                                    ),
-                                  ),
-                                ),
+                                // Ink(
+                                //   decoration: const ShapeDecoration(
+                                //     color: Color(0xFF44664D),
+                                //     shape: CircleBorder(),
+                                //   ),
+                                //   child: IconButton(
+                                //       icon: const Icon(Icons.alarm_add),
+                                //       color: Colors.white,
+                                //       onPressed: () => ()),
+                                // ),
                               ],
                             ),
                             const SizedBox(
@@ -252,16 +250,19 @@ class _HomePageState extends State<HomePage> {
                       '08:30 AM',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    attendanceProvider.punchInRecords.isEmpty ? ButtonTheme(
-                        minWidth: 300,
-                        height: 100,
-                        child: FilledButton(
-                            onPressed: () {}, child: const Text('Not yet', style: TextStyle(fontSize: 12)))) :OutlinedButton(
-                        onPressed: () {},
-                        child: Text(
-                          DateFormat("HH:mm").format(attendanceProvider.punchInRecords[attendanceProvider.punchoutRecords.length - 1]),
-                          style: const TextStyle(fontSize: 12),
-                        )),
+                    attendanceProvider.punchInRecords.isEmpty
+                        ? ButtonTheme(
+                            minWidth: 300,
+                            height: 100,
+                            child: FilledButton(
+                                onPressed: () {}, child: const Text('Not yet', style: TextStyle(fontSize: 12))))
+                        : OutlinedButton(
+                            onPressed: () {},
+                            child: Text(
+                              DateFormat("HH:mm").format(
+                                  attendanceProvider.punchInRecords[attendanceProvider.punchoutRecords.length - 1]),
+                              style: const TextStyle(fontSize: 12),
+                            )),
                   ],
                 ),
               ),
@@ -292,16 +293,19 @@ class _HomePageState extends State<HomePage> {
                       '05:30 PM',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    attendanceProvider.punchoutRecords.isEmpty ? ButtonTheme(
-                        minWidth: 300,
-                        height: 100,
-                        child: FilledButton(
-                            onPressed: () {}, child: const Text('Not yet', style: TextStyle(fontSize: 12)))) :OutlinedButton(
-                        onPressed: () {},
-                        child: Text(
-                          DateFormat("HH:mm").format(attendanceProvider.punchoutRecords[attendanceProvider.punchoutRecords.length - 1]),
-                          style: const TextStyle(fontSize: 12),
-                        )),
+                    attendanceProvider.punchoutRecords.isEmpty
+                        ? ButtonTheme(
+                            minWidth: 300,
+                            height: 100,
+                            child: FilledButton(
+                                onPressed: () {}, child: const Text('Not yet', style: TextStyle(fontSize: 12))))
+                        : OutlinedButton(
+                            onPressed: () {},
+                            child: Text(
+                              DateFormat("HH:mm").format(
+                                  attendanceProvider.punchoutRecords[attendanceProvider.punchoutRecords.length - 1]),
+                              style: const TextStyle(fontSize: 12),
+                            )),
                   ],
                 ),
               ),
