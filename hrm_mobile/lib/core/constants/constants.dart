@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 import 'package:flutter/material.dart';
 import 'package:hrm_mobile/features/attendance/presentation/pages/attendance_dashboard_screen.dart';
 import 'package:hrm_mobile/features/auth/presentation/pages/home_page.dart';
@@ -6,6 +7,10 @@ import 'package:hrm_mobile/features/leave/presentation/pages/leave_request_histo
 
 const baseUrl = "http://192.168.1.7:5000/api";
 const defaultImageUrl = "https://img.favpng.com/3/21/23/computer-icons-mobile-app-development-android-png-favpng-9xKBGkE07CG2VqArV2AVqGNHk.jpg";
+enum SocketEventNames { PUNCHINOUT }
+const socketEvents = {
+  SocketEventNames.PUNCHINOUT: 'PUNCHINOUT',
+};
 
 /// Bottom navigation configuration.
 List<Widget> bottomNavigationScreens() =>
@@ -39,5 +44,6 @@ Map<String, double> get leaveSessions => {
   "Morning": 4,
   "Afternoon": 4
 };
+
 
 

@@ -34,9 +34,7 @@ class AttendanceProvider with ChangeNotifier {
         }
         if(_todayAttendance[0].punchoutDate != null) isPunchIn = false;
       }
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
     isLoading = false;
     notifyListeners();
   }

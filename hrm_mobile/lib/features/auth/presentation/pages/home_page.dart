@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, curly_braces_in_flow_control_structures
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hrm_mobile/config/theme/color_schemes.g.dart';
@@ -8,6 +10,7 @@ import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,15 +22,45 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final DateTime globalCurrentDay = DateTime.now();
   final payloadUtil = PayloadUtil();
+  late IO.Socket socket;
   @override
   void initState() {
     initData();
+    initSocket();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    socket.disconnect();
+    socket.dispose();
+    super.dispose();
+  }
+
+  initSocket() {
+    socket = IO.io('http://192.168.1.7:5000', <String, dynamic>{
+      'autoConnect': false,
+      'transports': ['websocket'],
+    });
+    socket.connect();
+    socket.onConnect((_) {
+      print("Socket Connection established");
+    });
+    socket.onDisconnect((_) => print("Socket connection Disconnected"));
+    socket.onConnectError((err) => print(err));
+    socket.onError((err) => print(err));
+
+    socket.on(socketEvents[SocketEventNames.PUNCHINOUT]!, (data) {
+      bool isPunchIn = data == 'ISPUNCHIN';
+      if(isPunchIn) {
+        print('Punch in ne');
+      } else print('Punch out ne');
+    });
   }
 
   Future<void> initData() async {
     var userId = await payloadUtil.getUserId();
-    if(!context.mounted) return;
+    if (!context.mounted) return;
     final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
     final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: false);
     await leaveProvider.setUpData(null, context);
