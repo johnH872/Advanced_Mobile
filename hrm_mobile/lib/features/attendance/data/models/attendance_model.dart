@@ -18,6 +18,7 @@ class AttendanceModel extends AttendanceEntity with _$AttendanceModel {
     int? punchoutOffset,
     DateTime? createdAt,
     DateTime? updatedAt,
+    double? duration
   }) = _AttendanceModel;
 
   factory AttendanceModel.fromJson(Map<String, Object?> json) => _$AttendanceModelFromJson(json);
@@ -33,7 +34,8 @@ class AttendanceModel extends AttendanceEntity with _$AttendanceModel {
       punchoutDate: entity.punchoutDate,
       punchoutTime: entity.punchoutTime,
       punchoutNote: entity.punchoutNote,
-      punchoutOffset: entity.punchoutOffset
+      punchoutOffset: entity.punchoutOffset,
+      duration: entity.duration
     );
   }
 }

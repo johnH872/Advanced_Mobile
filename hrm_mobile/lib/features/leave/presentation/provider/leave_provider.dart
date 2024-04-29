@@ -34,12 +34,14 @@ class LeaveProvider with ChangeNotifier {
   List<int> availableListTypeIds = [];
   final PayloadUtil payloadUtil = PayloadUtil();
 
+  List<double> remainLeaves = List.generate(4, (index) => 0);
+
   bool isSaving = false;
   String userId = "";
 
   void setUpInitProviderData(LeaveRequestEntity? leaveRequestEntityInput) {
     var currentDate = DateTime.now();
-    if(leaveRequestEntityInput == null) {
+    if (leaveRequestEntityInput == null) {
       leaveRequestEntity.leaveRequestId = null;
       leaveRequestEntity.leaveDateFrom = DateTime(currentDate.year, currentDate.month, currentDate.day, 8, 30);
       leaveRequestEntity.leaveDateTo = DateTime(currentDate.year, currentDate.month, currentDate.day, 17, 30);
@@ -120,6 +122,31 @@ class LeaveProvider with ChangeNotifier {
       final response = await leaveEntitlementRepo.getLeaveEntitlementByEmployeeId(userId);
       if (response.data != null) {
         _myListLeaveEntilement = response.data?.result ?? [];
+        for (var i = 0; i < _myListLeaveEntilement.length; i++) {
+          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Annually').firstOrNull != null) {
+                remainLeaves[0] = 
+                _myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Annually').firstOrNull?.usableLeave ?? 0.0 - 
+                (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Annually').firstOrNull?.usedLeave ?? 0.0);
+          }
+
+          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Seniority').firstOrNull != null) {
+                remainLeaves[1] = 
+                _myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Seniority').firstOrNull?.usableLeave ?? 0.0 - 
+                (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Seniority').firstOrNull?.usedLeave ?? 0.0);
+          }
+
+          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Transfer').firstOrNull != null) {
+                remainLeaves[2] = 
+                _myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Transfer').firstOrNull?.usableLeave ?? 0.0 - 
+                (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Transfer').firstOrNull?.usedLeave ?? 0.0);
+          }
+
+          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'UnPaid').firstOrNull != null) {
+                remainLeaves[3] = 
+                _myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'UnPaid').firstOrNull?.usableLeave ?? 0.0 - 
+                (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'UnPaid').firstOrNull?.usedLeave ?? 0.0);
+          }
+        }
       }
     } catch (e) {
       print(e);
@@ -155,7 +182,7 @@ class LeaveProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
-    if(context.mounted) context.loaderOverlay.hide();
+    if (context.mounted) context.loaderOverlay.hide();
     notifyListeners();
   }
 
@@ -163,7 +190,7 @@ class LeaveProvider with ChangeNotifier {
     context.loaderOverlay.show();
     try {
       userId = await payloadUtil.getUserId();
-      if(dateTimeRange != null) {
+      if (dateTimeRange != null) {
         final response = await leaveRequestRepo.getLeaveRequestByFilter(userId, dateTimeRange);
         if (response.data != null) {
           _myListLeaveRequest = response.data?.result ?? [];
@@ -172,7 +199,7 @@ class LeaveProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
-    if(context.mounted) context.loaderOverlay.hide();
+    if (context.mounted) context.loaderOverlay.hide();
     notifyListeners();
   }
 

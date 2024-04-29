@@ -13,7 +13,7 @@ class _LeaveEntitlementApiService implements LeaveEntitlementApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.7:5000/api/LeaveEntitlementManagement/';
+    baseUrl ??= 'http://192.168.1.3:5000/api/LeaveEntitlementManagement/';
   }
 
   final Dio _dio;

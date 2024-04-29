@@ -13,7 +13,7 @@ class _LeaveTypeApiService implements LeaveTypeApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.7:5000/api/LeaveTypeManagement/';
+    baseUrl ??= 'http://192.168.1.3:5000/api/LeaveTypeManagement/';
   }
 
   final Dio _dio;

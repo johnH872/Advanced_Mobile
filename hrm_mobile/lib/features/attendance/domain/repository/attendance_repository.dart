@@ -6,4 +6,5 @@ import 'package:hrm_mobile/features/attendance/domain/entity/attendance_entity.d
 abstract class AttendanceRepository {
   Future<DataState<ServiceResponse<List<AttendanceEntity>>>> getAttendanceByEmployeeId(DateRangeModel dateRangeModel, String userId);
   Future<DataState<ServiceResponse<bool>>> punchInOutMobile(AttendanceEntity attendanceEntity, bool isPunchIn, String userId);
+  Future<DataState<ServiceResponse<List<AttendanceEntity>>>> getAttendanceRange(DateRangeModel dateRangeModel, String userId);
 }

@@ -25,6 +25,9 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
           ? null
           : DateTime.parse(json['dateStartConttract'] as String),
       ownerId: json['ownerId'] as String?,
+      manager: json['manager'] == null
+          ? null
+          : UserModel.fromJson(json['manager'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
@@ -42,4 +45,5 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
       'jobTitle': instance.jobTitle,
       'dateStartConttract': instance.dateStartConttract?.toIso8601String(),
       'ownerId': instance.ownerId,
+      'manager': instance.manager,
     };

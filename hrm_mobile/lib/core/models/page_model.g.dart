@@ -18,6 +18,7 @@ _$PageModelImpl _$$PageModelImplFromJson(Map<String, dynamic> json) =>
       selected: (json['selected'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      roles: json['roles'] as List<dynamic>?,
     );
 
 Map<String, dynamic> _$$PageModelImplToJson(_$PageModelImpl instance) =>
@@ -28,4 +29,5 @@ Map<String, dynamic> _$$PageModelImplToJson(_$PageModelImpl instance) =>
       'userId': instance.userId,
       'filter': instance.filter,
       'selected': instance.selected,
+      'roles': instance.roles,
     };

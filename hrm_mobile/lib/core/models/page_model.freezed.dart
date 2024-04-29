@@ -26,6 +26,7 @@ mixin _$PageModel {
   String? get userId => throw _privateConstructorUsedError;
   List<FilterMapping>? get filter => throw _privateConstructorUsedError;
   List<String>? get selected => throw _privateConstructorUsedError;
+  List<dynamic>? get roles => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -44,7 +45,8 @@ abstract class $PageModelCopyWith<$Res> {
       int? totalElement,
       String? userId,
       List<FilterMapping>? filter,
-      List<String>? selected});
+      List<String>? selected,
+      List<dynamic>? roles});
 }
 
 /// @nodoc
@@ -66,6 +68,7 @@ class _$PageModelCopyWithImpl<$Res, $Val extends PageModel>
     Object? userId = freezed,
     Object? filter = freezed,
     Object? selected = freezed,
+    Object? roles = freezed,
   }) {
     return _then(_value.copyWith(
       size: freezed == size
@@ -92,6 +95,10 @@ class _$PageModelCopyWithImpl<$Res, $Val extends PageModel>
           ? _value.selected
           : selected // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      roles: freezed == roles
+          ? _value.roles
+          : roles // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>?,
     ) as $Val);
   }
 }
@@ -110,7 +117,8 @@ abstract class _$$PageModelImplCopyWith<$Res>
       int? totalElement,
       String? userId,
       List<FilterMapping>? filter,
-      List<String>? selected});
+      List<String>? selected,
+      List<dynamic>? roles});
 }
 
 /// @nodoc
@@ -130,6 +138,7 @@ class __$$PageModelImplCopyWithImpl<$Res>
     Object? userId = freezed,
     Object? filter = freezed,
     Object? selected = freezed,
+    Object? roles = freezed,
   }) {
     return _then(_$PageModelImpl(
       size: freezed == size
@@ -156,6 +165,10 @@ class __$$PageModelImplCopyWithImpl<$Res>
           ? _value._selected
           : selected // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      roles: freezed == roles
+          ? _value._roles
+          : roles // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>?,
     ));
   }
 }
@@ -169,9 +182,11 @@ class _$PageModelImpl implements _PageModel {
       this.totalElement,
       this.userId,
       final List<FilterMapping>? filter,
-      final List<String>? selected})
+      final List<String>? selected,
+      final List<dynamic>? roles})
       : _filter = filter,
-        _selected = selected;
+        _selected = selected,
+        _roles = roles;
 
   factory _$PageModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$PageModelImplFromJson(json);
@@ -204,9 +219,19 @@ class _$PageModelImpl implements _PageModel {
     return EqualUnmodifiableListView(value);
   }
 
+  final List<dynamic>? _roles;
+  @override
+  List<dynamic>? get roles {
+    final value = _roles;
+    if (value == null) return null;
+    if (_roles is EqualUnmodifiableListView) return _roles;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   @override
   String toString() {
-    return 'PageModel(size: $size, pageNumber: $pageNumber, totalElement: $totalElement, userId: $userId, filter: $filter, selected: $selected)';
+    return 'PageModel(size: $size, pageNumber: $pageNumber, totalElement: $totalElement, userId: $userId, filter: $filter, selected: $selected, roles: $roles)';
   }
 
   @override
@@ -221,7 +246,8 @@ class _$PageModelImpl implements _PageModel {
                 other.totalElement == totalElement) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             const DeepCollectionEquality().equals(other._filter, _filter) &&
-            const DeepCollectionEquality().equals(other._selected, _selected));
+            const DeepCollectionEquality().equals(other._selected, _selected) &&
+            const DeepCollectionEquality().equals(other._roles, _roles));
   }
 
   @JsonKey(ignore: true)
@@ -233,7 +259,8 @@ class _$PageModelImpl implements _PageModel {
       totalElement,
       userId,
       const DeepCollectionEquality().hash(_filter),
-      const DeepCollectionEquality().hash(_selected));
+      const DeepCollectionEquality().hash(_selected),
+      const DeepCollectionEquality().hash(_roles));
 
   @JsonKey(ignore: true)
   @override
@@ -256,7 +283,8 @@ abstract class _PageModel implements PageModel {
       final int? totalElement,
       final String? userId,
       final List<FilterMapping>? filter,
-      final List<String>? selected}) = _$PageModelImpl;
+      final List<String>? selected,
+      final List<dynamic>? roles}) = _$PageModelImpl;
 
   factory _PageModel.fromJson(Map<String, dynamic> json) =
       _$PageModelImpl.fromJson;
@@ -273,6 +301,8 @@ abstract class _PageModel implements PageModel {
   List<FilterMapping>? get filter;
   @override
   List<String>? get selected;
+  @override
+  List<dynamic>? get roles;
   @override
   @JsonKey(ignore: true)
   _$$PageModelImplCopyWith<_$PageModelImpl> get copyWith =>

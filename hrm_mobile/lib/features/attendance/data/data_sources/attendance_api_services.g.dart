@@ -13,7 +13,7 @@ class _AttendanceApiService implements AttendanceApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.7:5000/api/AttendanceManagement/';
+    baseUrl ??= 'http://192.168.1.3:5000/api/AttendanceManagement/';
   }
 
   final Dio _dio;
@@ -93,6 +93,52 @@ class _AttendanceApiService implements AttendanceApiService {
     final value = ServiceResponse<bool>.fromJson(
       _result.data!,
       (json) => json as bool,
+    );
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<ServiceResponse<List<AttendanceModel>>>>
+      getAttendanceRange(
+    Map<String, dynamic> dataFilter,
+    String userId,
+    int timezone,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'userId': userId,
+      r'timezone': timezone,
+    };
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(dataFilter);
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<HttpResponse<ServiceResponse<List<AttendanceModel>>>>(
+            Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+                .compose(
+                  _dio.options,
+                  'GetAttendanceRange',
+                  queryParameters: queryParameters,
+                  data: _data,
+                )
+                .copyWith(
+                    baseUrl: _combineBaseUrls(
+                  _dio.options.baseUrl,
+                  baseUrl,
+                ))));
+    final value = ServiceResponse<List<AttendanceModel>>.fromJson(
+      _result.data!,
+      (json) => json is List<dynamic>
+          ? json
+              .map<AttendanceModel>(
+                  (i) => AttendanceModel.fromJson(i as Map<String, dynamic>))
+              .toList()
+          : List.empty(),
     );
     final httpResponse = HttpResponse(value, _result);
     return httpResponse;

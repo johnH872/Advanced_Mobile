@@ -13,6 +13,7 @@ abstract class PageModel with _$PageModel {
     String? userId,
     List<FilterMapping>? filter,
     List<String>? selected,
+    List<dynamic>? roles,
   }) = _PageModel;
 
   factory PageModel.fromJson(Map<String, Object?> json)

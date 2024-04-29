@@ -7,7 +7,7 @@ class PayloadUtil {
   Future<String> getUserId() async {
     String userId = "";
     try {
-       SharedPreferences  prefs = await SharedPreferences.getInstance();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       var token = prefs.getString("accessToken");
       if (token != null) {
         if (JwtDecoder.tryDecode(token) != null) {
@@ -19,5 +19,22 @@ class PayloadUtil {
       print(error);
     }
     return userId;
+  }
+
+  Future<List<dynamic>> getRoleModel() async {
+    List<dynamic> roles = [];
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var token = prefs.getString("accessToken");
+      if (token != null) {
+        if (JwtDecoder.tryDecode(token) != null) {
+          Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+          roles =  decodedToken['user']['roles'];
+        }
+      }
+    } catch (error) {
+      print(error);
+    }
+    return roles;
   }
 }

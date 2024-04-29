@@ -33,6 +33,7 @@ mixin _$UserModel {
   String? get jobTitle => throw _privateConstructorUsedError;
   DateTime? get dateStartConttract => throw _privateConstructorUsedError;
   String? get ownerId => throw _privateConstructorUsedError;
+  UserModel? get manager => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -58,7 +59,10 @@ abstract class $UserModelCopyWith<$Res> {
       String? phoneNumber,
       String? jobTitle,
       DateTime? dateStartConttract,
-      String? ownerId});
+      String? ownerId,
+      UserModel? manager});
+
+  $UserModelCopyWith<$Res>? get manager;
 }
 
 /// @nodoc
@@ -87,6 +91,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? jobTitle = freezed,
     Object? dateStartConttract = freezed,
     Object? ownerId = freezed,
+    Object? manager = freezed,
   }) {
     return _then(_value.copyWith(
       userId: freezed == userId
@@ -141,7 +146,23 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.ownerId
           : ownerId // ignore: cast_nullable_to_non_nullable
               as String?,
+      manager: freezed == manager
+          ? _value.manager
+          : manager // ignore: cast_nullable_to_non_nullable
+              as UserModel?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $UserModelCopyWith<$Res>? get manager {
+    if (_value.manager == null) {
+      return null;
+    }
+
+    return $UserModelCopyWith<$Res>(_value.manager!, (value) {
+      return _then(_value.copyWith(manager: value) as $Val);
+    });
   }
 }
 
@@ -166,7 +187,11 @@ abstract class _$$UserModelImplCopyWith<$Res>
       String? phoneNumber,
       String? jobTitle,
       DateTime? dateStartConttract,
-      String? ownerId});
+      String? ownerId,
+      UserModel? manager});
+
+  @override
+  $UserModelCopyWith<$Res>? get manager;
 }
 
 /// @nodoc
@@ -193,6 +218,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? jobTitle = freezed,
     Object? dateStartConttract = freezed,
     Object? ownerId = freezed,
+    Object? manager = freezed,
   }) {
     return _then(_$UserModelImpl(
       userId: freezed == userId
@@ -247,6 +273,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.ownerId
           : ownerId // ignore: cast_nullable_to_non_nullable
               as String?,
+      manager: freezed == manager
+          ? _value.manager
+          : manager // ignore: cast_nullable_to_non_nullable
+              as UserModel?,
     ));
   }
 }
@@ -267,7 +297,8 @@ class _$UserModelImpl implements _UserModel {
       this.phoneNumber,
       this.jobTitle,
       this.dateStartConttract,
-      this.ownerId});
+      this.ownerId,
+      this.manager});
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -298,10 +329,12 @@ class _$UserModelImpl implements _UserModel {
   final DateTime? dateStartConttract;
   @override
   final String? ownerId;
+  @override
+  final UserModel? manager;
 
   @override
   String toString() {
-    return 'UserModel(userId: $userId, firstName: $firstName, middleName: $middleName, lastName: $lastName, email: $email, birth: $birth, gender: $gender, nationality: $nationality, avatarUrl: $avatarUrl, phoneNumber: $phoneNumber, jobTitle: $jobTitle, dateStartConttract: $dateStartConttract, ownerId: $ownerId)';
+    return 'UserModel(userId: $userId, firstName: $firstName, middleName: $middleName, lastName: $lastName, email: $email, birth: $birth, gender: $gender, nationality: $nationality, avatarUrl: $avatarUrl, phoneNumber: $phoneNumber, jobTitle: $jobTitle, dateStartConttract: $dateStartConttract, ownerId: $ownerId, manager: $manager)';
   }
 
   @override
@@ -329,7 +362,8 @@ class _$UserModelImpl implements _UserModel {
                 other.jobTitle == jobTitle) &&
             (identical(other.dateStartConttract, dateStartConttract) ||
                 other.dateStartConttract == dateStartConttract) &&
-            (identical(other.ownerId, ownerId) || other.ownerId == ownerId));
+            (identical(other.ownerId, ownerId) || other.ownerId == ownerId) &&
+            (identical(other.manager, manager) || other.manager == manager));
   }
 
   @JsonKey(ignore: true)
@@ -348,7 +382,8 @@ class _$UserModelImpl implements _UserModel {
       phoneNumber,
       jobTitle,
       dateStartConttract,
-      ownerId);
+      ownerId,
+      manager);
 
   @JsonKey(ignore: true)
   @override
@@ -378,7 +413,8 @@ abstract class _UserModel implements UserModel {
       final String? phoneNumber,
       final String? jobTitle,
       final DateTime? dateStartConttract,
-      final String? ownerId}) = _$UserModelImpl;
+      final String? ownerId,
+      final UserModel? manager}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
       _$UserModelImpl.fromJson;
@@ -409,6 +445,8 @@ abstract class _UserModel implements UserModel {
   DateTime? get dateStartConttract;
   @override
   String? get ownerId;
+  @override
+  UserModel? get manager;
   @override
   @JsonKey(ignore: true)
   _$$UserModelImplCopyWith<_$UserModelImpl> get copyWith =>

@@ -12,7 +12,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor:const Color(0xFFFBE186),
       leading: leadingIcon, 
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold),), 
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),), 
       actions: <Widget>[
         button_1 ?? Container(),
         isDisableBellIcon == null ? IconButton(

@@ -11,6 +11,7 @@ class AttendanceEntity {
   final int? punchoutOffset;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final double? duration;
   
   AttendanceEntity({
     this.attendanceId,
@@ -24,6 +25,7 @@ class AttendanceEntity {
     this.punchoutNote,
     this.punchoutOffset,
     this.createdAt,
-    this.updatedAt
+    this.updatedAt,
+    this.duration
   });
 }

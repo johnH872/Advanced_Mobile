@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, curly_braces_in_flow_control_structures
+// ignore_for_file: avoid_print, curly_braces_in_flow_control_structures, library_prefixes
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +7,7 @@ import 'package:hrm_mobile/core/constants/constants.dart';
 import 'package:hrm_mobile/core/util/payload_util.dart';
 import 'package:hrm_mobile/features/attendance/presentation/provider/attendance_provider.dart';
 import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:hrm_mobile/features/auth/presentation/widgets/success_dialog.dart';
 import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -25,8 +26,8 @@ class _HomePageState extends State<HomePage> {
   late IO.Socket socket;
   @override
   void initState() {
-    initData();
     initSocket();
+    initData();
     super.initState();
   }
 
@@ -38,7 +39,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   initSocket() {
-    socket = IO.io('http://192.168.1.7:5000', <String, dynamic>{
+    socket = IO.io('http://$baseIpAddress:5000', <String, dynamic>{
       'autoConnect': false,
       'transports': ['websocket'],
     });
@@ -52,9 +53,15 @@ class _HomePageState extends State<HomePage> {
 
     socket.on(socketEvents[SocketEventNames.PUNCHINOUT]!, (data) {
       bool isPunchIn = data == 'ISPUNCHIN';
-      if(isPunchIn) {
-        print('Punch in ne');
-      } else print('Punch out ne');
+      if (context.mounted) {
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => SuccessDialog(
+            title: 'Success',
+            content: '${isPunchIn ? 'Punch in' : 'Punch out'} sucessfully!',
+          ),
+        );
+      }
     });
   }
 
@@ -271,7 +278,7 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      'Clock in',
+                      'Punch in',
                       style: TextStyle(
                         fontSize: 14,
                       ),
@@ -314,7 +321,7 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      'Clock out',
+                      'Punch out',
                       style: TextStyle(
                         fontSize: 14,
                       ),
@@ -355,38 +362,38 @@ class _HomePageState extends State<HomePage> {
           spacing: 30,
           alignment: WrapAlignment.spaceBetween,
           children: [
-            _builderButtonFab(
-                context,
-                "Reports",
-                const Icon(
-                  Icons.analytics,
-                  color: Color(0xff389151),
-                ),
-                null),
-            _builderButtonFab(
-                context,
-                "Apply leave",
-                const Icon(
-                  Icons.flight_takeoff,
-                  color: Color(0xff1A3BE7),
-                ),
-                null),
-            _builderButtonFab(
-                context,
-                "News",
-                const Icon(
-                  Icons.document_scanner,
-                  color: Color(0xffC47D29),
-                ),
-                null),
-            _builderButtonFab(
-                context,
-                "Timesheet",
-                const Icon(
-                  Icons.calendar_month,
-                  color: Color(0xffCA5858),
-                ),
-                null),
+            // _builderButtonFab(
+            //     context,
+            //     "Reports",
+            //     const Icon(
+            //       Icons.analytics,
+            //       color: Color(0xff389151),
+            //     ),
+            //     null),
+            // _builderButtonFab(
+            //     context,
+            //     "Apply leave",
+            //     const Icon(
+            //       Icons.flight_takeoff,
+            //       color: Color(0xff1A3BE7),
+            //     ),
+            //     null),
+            // _builderButtonFab(
+            //     context,
+            //     "News",
+            //     const Icon(
+            //       Icons.document_scanner,
+            //       color: Color(0xffC47D29),
+            //     ),
+            //     null),
+            // _builderButtonFab(
+            //     context,
+            //     "Timesheet",
+            //     const Icon(
+            //       Icons.calendar_month,
+            //       color: Color(0xffCA5858),
+            //     ),
+            //     null),
             _builderButtonFab(
                 context,
                 "Employee",
@@ -397,15 +404,15 @@ class _HomePageState extends State<HomePage> {
                 '/list-employee'),
             _builderButtonFab(
                 context,
-                "Assign leave",
+                "Leave (+)",
                 const Icon(
                   Icons.assignment_ind,
                   color: Color(0xff5457A7),
                 ),
-                null),
+                '/leave-request'),
             _builderButtonFab(
                 context,
-                "Working days",
+                "Work calendar",
                 const Icon(
                   Icons.edit_calendar_outlined,
                   color: Color(0xffAB933F),
@@ -552,7 +559,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   const Wrap(
-                    spacing: 10,
+                    spacing: 20,
                     children: [
                       Text(
                         'Annually',
@@ -580,8 +587,10 @@ class _HomePageState extends State<HomePage> {
                                 .where((element) => element.LeaveType?.leaveTypeName == 'Annually')
                                 .firstOrNull
                                 ?.usableLeave
-                                ?.toString() ??
-                            "0.0",
+                                ?.toStringAsFixed(1)
+                                .padLeft(4, '0')
+                                .toString() ??
+                            "00.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -589,8 +598,10 @@ class _HomePageState extends State<HomePage> {
                                 .where((element) => element.LeaveType?.leaveTypeName == 'Seniority')
                                 .firstOrNull
                                 ?.usableLeave
-                                ?.toString() ??
-                            "0.0",
+                                ?.toStringAsFixed(1)
+                                .padLeft(4, '0')
+                                .toString() ??
+                            "00.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -598,8 +609,10 @@ class _HomePageState extends State<HomePage> {
                                 .where((element) => element.LeaveType?.leaveTypeName == 'Transfer')
                                 .firstOrNull
                                 ?.usableLeave
-                                ?.toString() ??
-                            "0.0",
+                                ?.toStringAsFixed(1)
+                                .padLeft(4, '0')
+                                .toString() ??
+                            "00.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -607,8 +620,10 @@ class _HomePageState extends State<HomePage> {
                                 .where((element) => element.LeaveType?.leaveTypeName == 'UnPaid')
                                 .firstOrNull
                                 ?.usableLeave
-                                ?.toString() ??
-                            "0.0",
+                                ?.toStringAsFixed(1)
+                                .padLeft(4, '0')
+                                .toString() ??
+                            "00.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -621,8 +636,10 @@ class _HomePageState extends State<HomePage> {
                                 .where((element) => element.LeaveType?.leaveTypeName == 'Annually')
                                 .firstOrNull
                                 ?.usedLeave
-                                ?.toString() ??
-                            "0.0",
+                                ?.toStringAsFixed(1)
+                                .padLeft(4, '0')
+                                .toString() ??
+                            "00.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -630,8 +647,10 @@ class _HomePageState extends State<HomePage> {
                                 .where((element) => element.LeaveType?.leaveTypeName == 'Seniority')
                                 .firstOrNull
                                 ?.usedLeave
-                                ?.toString() ??
-                            "0.0",
+                                ?.toStringAsFixed(1)
+                                .padLeft(4, '0')
+                                .toString() ??
+                            "00.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -639,39 +658,45 @@ class _HomePageState extends State<HomePage> {
                                 .where((element) => element.LeaveType?.leaveTypeName == 'Transfer')
                                 .firstOrNull
                                 ?.usedLeave
-                                ?.toString() ??
-                            "0.0",
+                                ?.toStringAsFixed(1)
+                                .padLeft(4, '0')
+                                .toString() ??
+                            "00.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        leaveProvider.myListLeaveEntilement
-                                .where((element) => element.LeaveType?.leaveTypeName == 'UnPaid')
-                                .firstOrNull
-                                ?.usedLeave
-                                ?.toString() ??
-                            "0.0",
+                        leaveProvider.myListLeaveEntilement.isNotEmpty
+                            ? leaveProvider.myListLeaveEntilement
+                                    .where((element) => element.LeaveType?.leaveTypeName == 'UnPaid')
+                                    .firstOrNull
+                                    ?.usedLeave
+                                    ?.toStringAsFixed(1)
+                                    .padLeft(4, '0')
+                                    .toString() ??
+                                "00.0"
+                            : "00.0",
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                  const Wrap(
+                  Wrap(
                     spacing: 35,
                     children: [
                       Text(
-                        '0.0',
-                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                        leaveProvider.remainLeaves[0].toStringAsFixed(1).padLeft(4, '0'),
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '0.0',
-                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                        leaveProvider.remainLeaves[1].toStringAsFixed(1).padLeft(4, '0'),
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '0.0',
-                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                        leaveProvider.remainLeaves[1].toStringAsFixed(1).padLeft(4, '0'),
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '0.0',
-                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                        leaveProvider.remainLeaves[3].toStringAsFixed(1).padLeft(4, '0'),
+                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                     ],
                   )

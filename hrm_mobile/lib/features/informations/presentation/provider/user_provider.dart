@@ -7,6 +7,7 @@ import 'package:hrm_mobile/core/constants/enums.dart';
 import 'package:hrm_mobile/core/models/date_range_model.dart';
 import 'package:hrm_mobile/core/models/filter_mapping.dart';
 import 'package:hrm_mobile/core/models/page_model.dart';
+import 'package:hrm_mobile/core/util/payload_util.dart';
 import 'package:hrm_mobile/features/informations/domain/entity/user_entity.dart';
 import 'package:hrm_mobile/features/informations/domain/repository/employee_repository.dart';
 import 'package:hrm_mobile/features/informations/domain/repository/media_repository.dart';
@@ -27,6 +28,10 @@ class UserProvider with ChangeNotifier {
   bool isFirstLoading = true;
   bool isMaxOfList = false;
   bool isUploadingImage = false;
+
+  List<UserEntity> listAllUser = [];
+
+  var payloadUtil = PayloadUtil();
 
   void resetList(value) {
     isFirstLoading = value;
@@ -66,6 +71,8 @@ class UserProvider with ChangeNotifier {
       final response = await employeeRepository.getEmployeeById(userId ?? "");
       if (response.data != null) {
         isMyProfile ? loggedInUser = response.data!.result : currentUser = response.data!.result;
+        listAllUser.clear();
+        listAllUser.add(response.data!.result ?? UserEntity());
       }
     } catch (e) {}
     isLoading = false;
@@ -76,12 +83,13 @@ class UserProvider with ChangeNotifier {
     try {
       if(isMaxOfList) return;
       isLoading = true;
+      var roles = await payloadUtil.getRoleModel();
+      var userId = await payloadUtil.getUserId();
+
       int currentPage = page?.pageNumber ?? 0;
-      var reqPage = page?.copyWith(size: 15, pageNumber: isFirstLoading ? currentPage : currentPage + 1) ?? PageModel(size: 15, pageNumber: 0);
+      var reqPage = page?.copyWith(size: 15, pageNumber: isFirstLoading ? currentPage : currentPage + 1, roles: roles) ?? PageModel(size: 15, pageNumber: 0, roles: roles);
       page = reqPage.copyWith();
       final response = await employeeRepository.getEmployeePaging(reqPage);
-      
-      // await Future.delayed(const Duration(seconds: 3));
       
       if (response.error != null) {
         _userList = [];
@@ -90,9 +98,9 @@ class UserProvider with ChangeNotifier {
         bool isEmptyList = response.data?.result?.data?.isEmpty ?? true;
         if(!isEmptyList) {
           if (isFirstLoading) {
-            _userList = response.data!.result!.data;
+            _userList = response.data!.result!.data?.where((element) => element.userId != userId).toList() ?? [];
           } else {
-            _userList = [...?_userList, ...?response.data!.result!.data];
+            _userList = [...?_userList, ...response.data!.result!.data?.where((element) => element.userId != userId).toList() ?? []];
           }
           isFirstLoading = false;
         } else {

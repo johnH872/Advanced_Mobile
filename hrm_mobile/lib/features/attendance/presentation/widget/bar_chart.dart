@@ -1,21 +1,33 @@
-import 'dart:math';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:hrm_mobile/core/util/payload_util.dart';
+import 'package:hrm_mobile/features/attendance/presentation/provider/attendance_provider.dart';
+import 'package:provider/provider.dart';
 
-class BarChartSample8 extends StatefulWidget {
-  const BarChartSample8({super.key});
+class BarChartAttendance extends StatefulWidget {
+  const BarChartAttendance({super.key});
 
   final Color barBackgroundColor = Colors.white;
   final Color barColor = const Color(0xff0A672A);
 
   @override
-  State<StatefulWidget> createState() => BarChartSample1State();
+  State<StatefulWidget> createState() => BarChartAttendanceState();
 }
 
-class BarChartSample1State extends State<BarChartSample8> {
+class BarChartAttendanceState extends State<BarChartAttendance> {
+  final payloadUtil = PayloadUtil();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> initData() async {
+  }
+
   @override
   Widget build(BuildContext context) {
+    final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: true);
     return AspectRatio(
       aspectRatio: 1,
       child: Padding(
@@ -29,7 +41,7 @@ class BarChartSample1State extends State<BarChartSample8> {
             ),
             Expanded(
               child: BarChart(
-                randomData(),
+                showData(attendanceProvider.thisWeekDuration),
               ),
             ),
           ],
@@ -48,9 +60,9 @@ class BarChartSample1State extends State<BarChartSample8> {
       barRods: [
         BarChartRodData(
           toY: y,
-          color: x >= 4 ? Colors.transparent : widget.barColor,
+          color:  widget.barColor,
           borderRadius: BorderRadius.zero,
-          borderDashArray: x >= 4 ? [4, 4] : null,
+          // borderDashArray: x == 0 ? [7, 7] : null,
           width: 22,
           borderSide: BorderSide(color: widget.barColor, width: 2.0),
         ),
@@ -78,7 +90,7 @@ class BarChartSample1State extends State<BarChartSample8> {
     );
   }
 
-  BarChartData randomData() {
+  BarChartData showData(List<double> data) {
     return BarChartData(
       maxY: 24.0,
       barTouchData: BarTouchData(
@@ -124,7 +136,7 @@ class BarChartSample1State extends State<BarChartSample8> {
         7,
         (i) => makeGroupData(
           i,
-          Random().nextInt(24).toDouble(),
+          data[i]
         ),
       ),
       gridData: FlGridData(

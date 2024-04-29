@@ -1,6 +1,7 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, curly_braces_in_flow_control_structures
 import 'dart:io';
 
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hrm_mobile/core/constants/constants.dart';
@@ -81,12 +82,16 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
                           Provider.of<UserProvider>(context, listen: false).getEmployeePaging(),
                           Navigator.of(context).pop()
                         }),
-            button_1: !widget.isMyProfile ? IconButton(
-              icon: const Icon(Icons.assignment_return),
-              tooltip: 'refresh',
-              onPressed: () => showDialog(
-                  context: context, builder: (BuildContext context) => Dialog.fullscreen(child: LeaveRequestScreen(userEntity: widget.inputUser))),
-            ) : null,
+            button_1: !widget.isMyProfile
+                ? IconButton(
+                    icon: const Icon(Icons.assignment_return),
+                    tooltip: 'refresh',
+                    onPressed: () => showDialog(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            Dialog.fullscreen(child: LeaveRequestScreen(userEntity: widget.inputUser))),
+                  )
+                : null,
           ),
           body: SizedBox(
             child: Column(
@@ -319,6 +324,47 @@ Widget _buildProfileEditor(BuildContext context, FormGroup form, bool isMyProfil
                             padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
                             child: Column(
                               children: [
+                                !isMyProfile ? DropdownSearch<UserEntity>(
+                                  // asyncItems: (filter) => getData(filter),
+                                  // clearButtonProps: const ClearButtonProps(isVisible: true),
+                                  enabled: false,
+                                  dropdownBuilder: (context, selectedItem) {
+                                    return ListTile(
+                                      title: Text(isMyProfile
+                                          ? '${userProvider.loggedInUser!.manager?.firstName ?? ""} ${userProvider.loggedInUser!.manager?.middleName ?? ""} ${userProvider.loggedInUser!.manager?.lastName ?? ""}'
+                                          : '${userProvider.currentUser!.manager?.firstName ?? ""} ${userProvider.currentUser!.manager?.middleName ?? ""} ${userProvider.currentUser!.manager?.lastName ?? ""}'),
+                                      subtitle: Text(isMyProfile
+                                          ? userProvider.loggedInUser!.manager!.email ?? "No email"
+                                          : userProvider.currentUser?.manager!.email ?? "No email"),
+                                      leading: CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage: NetworkImage(isMyProfile
+                                            ? userProvider.loggedInUser?.manager!.avatarUrl ?? defaultImageUrl
+                                            : userProvider.currentUser?.manager!.avatarUrl ?? defaultImageUrl),
+                                      ),
+                                    );
+                                  },
+                                  dropdownDecoratorProps: const DropDownDecoratorProps(
+                                    dropdownSearchDecoration: InputDecoration(
+                                      contentPadding: EdgeInsets.all(0),
+                                      border: OutlineInputBorder(),
+                                      labelText: "Managed by",
+                                      hintText: "Managed by",
+                                    ),
+                                  ),
+                                  items: userProvider.listAllUser,
+                                  compareFn: (i, s) => i.firstName == s.firstName,
+                                  popupProps: PopupPropsMultiSelection.dialog(
+                                    // isFilterOnline: false,
+                                    showSelectedItems: true,
+                                    dialogProps: DialogProps(shape: Border.all(style: BorderStyle.none)),
+                                    showSearchBox: true,
+                                    itemBuilder: _customPopupItemBuilderExample2,
+                                  ),
+                                ): Container(),
+                                !isMyProfile ? const SizedBox(
+                                  height: 15,
+                                ): Container(),
                                 ReactiveTextField(
                                   formControlName: 'jobTitle',
                                   obscureText: false,
@@ -334,7 +380,7 @@ Widget _buildProfileEditor(BuildContext context, FormGroup form, bool isMyProfil
                                   formControlName: 'dateStartContract',
                                   type: ReactiveDatePickerFieldType.date,
                                   dateFormat: DateFormat.yMMMMd(),
-                                  disabledOpacity: 0.9,
+                                  disabledOpacity: 1,
                                   style: const TextStyle(fontWeight: FontWeight.normal),
                                   decoration: const InputDecoration(
                                     labelText: 'Date Start Contract',
@@ -428,8 +474,8 @@ Widget _buildProfileHeader(BuildContext context, bool isMyProfile) {
                         children: [
                           Text(
                               isMyProfile
-                                  ? '${userProvider.loggedInUser!.firstName ?? ""} ${userProvider.loggedInUser!.middleName ?? ""} ${userProvider.loggedInUser!.lastName ?? ""}'
-                                  : '${userProvider.currentUser!.firstName ?? ""} ${userProvider.currentUser!.middleName ?? ""} ${userProvider.currentUser!.lastName ?? ""}',
+                                  ? '${userProvider.loggedInUser!.firstName?.trim() ?? ""} ${userProvider.loggedInUser!.middleName?.trim() ?? ""} ${userProvider.loggedInUser!.lastName?.trim() ?? ""}'
+                                  : '${userProvider.currentUser!.firstName?.trim() ?? ""} ${userProvider.currentUser!.middleName?.trim() ?? ""} ${userProvider.currentUser!.lastName?.trim() ?? ""}',
                               style: const TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
                               overflow: TextOverflow.ellipsis),
                           const SizedBox(
@@ -534,4 +580,26 @@ Future<void> openLaunchURL(String type, String contact, BuildContext context) as
       }
       break;
   }
+}
+
+Widget _customPopupItemBuilderExample2(BuildContext context, UserEntity item, bool isSelected) {
+  return Container(
+    margin: const EdgeInsets.symmetric(horizontal: 8),
+    decoration: !isSelected
+        ? null
+        : BoxDecoration(
+            border: Border.all(color: Theme.of(context).primaryColor),
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.white,
+          ),
+    child: ListTile(
+      selected: isSelected,
+      title: Text(item.firstName ?? ""),
+      subtitle: Text(item.email ?? "No email"),
+      leading: CircleAvatar(
+        radius: 24,
+        backgroundImage: NetworkImage(item.avatarUrl ?? defaultImageUrl),
+      ),
+    ),
+  );
 }

@@ -89,7 +89,7 @@ class _ListEmployeeScreenState extends State<ListEmployeeScreen> {
                                   )))
                         },
                         leading: CircleAvatar(radius: 24, backgroundImage: NetworkImage(userProvider.userLst?[index].avatarUrl ?? defaultImageUrl)),
-                        title: Text('${userProvider.userLst?[index].firstName ?? ""} ${userProvider.userLst?[index].middleName ?? ""} ${userProvider.userLst?[index].lastName ?? ""}'),
+                        title: Text('${userProvider.userLst?[index].firstName?.trim() ?? ""} ${userProvider.userLst?[index].middleName?.trim() ?? ""} ${userProvider.userLst?[index].lastName?.trim() ?? ""}'),
                         subtitle: Text(
                           userProvider.userLst?[index].jobTitle ?? "No position",
                           style: const TextStyle(color: Color(0xFF4B4639)),

@@ -88,7 +88,7 @@ class _LeaveRequestHistoryScreenState extends State<LeaveRequestHistoryScreen> {
               flex: 0,
               child: Text(
                 "Leave Request Info",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             Flexible(
@@ -108,7 +108,7 @@ class _LeaveRequestHistoryScreenState extends State<LeaveRequestHistoryScreen> {
             const Flexible(
                 flex: 0,
                 child: SizedBox(
-                  height: 30,
+                  height: 20,
                 )),
             Flexible(
                 flex: 0,
@@ -121,10 +121,12 @@ class _LeaveRequestHistoryScreenState extends State<LeaveRequestHistoryScreen> {
                         flex: 1,
                         child: Text(
                           "From",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                         )),
-                    Expanded(flex: 1, child: Text("To", style: TextStyle(fontWeight: FontWeight.bold))),
-                    Flexible(flex: 0, child: Text("Status     ", style: TextStyle(fontWeight: FontWeight.bold))),
+                    Expanded(flex: 1, child: Text("To", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14))),
+                    Flexible(
+                        flex: 0,
+                        child: Text("Status     ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14))),
                   ]),
                 )),
             Expanded(
@@ -147,27 +149,28 @@ class _LeaveRequestHistoryScreenState extends State<LeaveRequestHistoryScreen> {
                             child: Text(
                               DateFormat('dd MMM, yy')
                                   .format(leaveProvider.myListLeaveRequest[index].leaveDateFrom ?? DateTime.now()),
-                              style: const TextStyle(color: Colors.black),
+                              style: const TextStyle(color: Colors.black,fontSize: 15),
                             )),
                         Expanded(
                             flex: 1,
                             child: Text(
                                 DateFormat('dd MMM, yy')
                                     .format(leaveProvider.myListLeaveRequest[index].leaveDateTo ?? DateTime.now()),
-                                style: const TextStyle(color: Colors.black))),
+                                style: const TextStyle(color: Colors.black, fontSize: 15))),
                         Flexible(
                           flex: 0,
                           child: Chip(
-                            elevation: 9,
-                            side: BorderSide.none,
-                            padding: const EdgeInsets.all(0),
+                              elevation: 9,
+                              side: BorderSide.none,
+                              padding: const EdgeInsets.all(0),
                               label: Text(
                                   commonUtil.capitalizeFirstLettere(
                                       leaveProvider.myListLeaveRequest[index].DataState?.dataStateName ?? ""),
                                   style: TextStyle(
                                       color: commonUtil
                                           .hexToColor(leaveProvider.myListLeaveRequest[index].DataState?.colorCode),
-                                      fontWeight: FontWeight.bold, fontSize: 12))),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12))),
                         )
                       ]));
                 },

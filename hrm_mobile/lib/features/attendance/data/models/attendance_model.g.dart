@@ -29,6 +29,7 @@ _$AttendanceModelImpl _$$AttendanceModelImplFromJson(
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
+      duration: (json['duration'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$$AttendanceModelImplToJson(
@@ -46,4 +47,5 @@ Map<String, dynamic> _$$AttendanceModelImplToJson(
       'punchoutOffset': instance.punchoutOffset,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
+      'duration': instance.duration,
     };

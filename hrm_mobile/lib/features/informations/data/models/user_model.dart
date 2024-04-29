@@ -1,10 +1,10 @@
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hrm_mobile/features/informations/domain/entity/user_entity.dart';
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';
+
 @freezed
-class UserModel extends UserEntity with _$UserModel{
+class UserModel extends UserEntity with _$UserModel {
   const factory UserModel({
     String? userId,
     String? firstName,
@@ -19,11 +19,10 @@ class UserModel extends UserEntity with _$UserModel{
     String? jobTitle,
     DateTime? dateStartConttract,
     String? ownerId,
-
+    UserModel? manager,
   }) = _UserModel;
 
-  factory UserModel.fromJson(Map<String, Object?> json)
-        => _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, Object?> json) => _$UserModelFromJson(json);
 
   factory UserModel.fromEntity(UserEntity entity) {
     return UserModel(
@@ -39,7 +38,7 @@ class UserModel extends UserEntity with _$UserModel{
       phoneNumber: entity.phoneNumber,
       jobTitle: entity.jobTitle,
       dateStartConttract: entity.dateStartConttract,
-      ownerId: entity.ownerId
+      ownerId: entity.ownerId,
     );
   }
 }

@@ -32,6 +32,7 @@ mixin _$AttendanceModel {
   int? get punchoutOffset => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
+  double? get duration => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -57,7 +58,8 @@ abstract class $AttendanceModelCopyWith<$Res> {
       String? punchoutNote,
       int? punchoutOffset,
       DateTime? createdAt,
-      DateTime? updatedAt});
+      DateTime? updatedAt,
+      double? duration});
 }
 
 /// @nodoc
@@ -85,6 +87,7 @@ class _$AttendanceModelCopyWithImpl<$Res, $Val extends AttendanceModel>
     Object? punchoutOffset = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? duration = freezed,
   }) {
     return _then(_value.copyWith(
       attendanceId: freezed == attendanceId
@@ -135,6 +138,10 @@ class _$AttendanceModelCopyWithImpl<$Res, $Val extends AttendanceModel>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      duration: freezed == duration
+          ? _value.duration
+          : duration // ignore: cast_nullable_to_non_nullable
+              as double?,
     ) as $Val);
   }
 }
@@ -159,7 +166,8 @@ abstract class _$$AttendanceModelImplCopyWith<$Res>
       String? punchoutNote,
       int? punchoutOffset,
       DateTime? createdAt,
-      DateTime? updatedAt});
+      DateTime? updatedAt,
+      double? duration});
 }
 
 /// @nodoc
@@ -185,6 +193,7 @@ class __$$AttendanceModelImplCopyWithImpl<$Res>
     Object? punchoutOffset = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? duration = freezed,
   }) {
     return _then(_$AttendanceModelImpl(
       attendanceId: freezed == attendanceId
@@ -235,6 +244,10 @@ class __$$AttendanceModelImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      duration: freezed == duration
+          ? _value.duration
+          : duration // ignore: cast_nullable_to_non_nullable
+              as double?,
     ));
   }
 }
@@ -254,7 +267,8 @@ class _$AttendanceModelImpl implements _AttendanceModel {
       this.punchoutNote,
       this.punchoutOffset,
       this.createdAt,
-      this.updatedAt});
+      this.updatedAt,
+      this.duration});
 
   factory _$AttendanceModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$AttendanceModelImplFromJson(json);
@@ -283,10 +297,12 @@ class _$AttendanceModelImpl implements _AttendanceModel {
   final DateTime? createdAt;
   @override
   final DateTime? updatedAt;
+  @override
+  final double? duration;
 
   @override
   String toString() {
-    return 'AttendanceModel(attendanceId: $attendanceId, userId: $userId, punchinDate: $punchinDate, punchinTime: $punchinTime, punchinNote: $punchinNote, punchinOffset: $punchinOffset, punchoutDate: $punchoutDate, punchoutTime: $punchoutTime, punchoutNote: $punchoutNote, punchoutOffset: $punchoutOffset, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'AttendanceModel(attendanceId: $attendanceId, userId: $userId, punchinDate: $punchinDate, punchinTime: $punchinTime, punchinNote: $punchinNote, punchinOffset: $punchinOffset, punchoutDate: $punchoutDate, punchoutTime: $punchoutTime, punchoutNote: $punchoutNote, punchoutOffset: $punchoutOffset, createdAt: $createdAt, updatedAt: $updatedAt, duration: $duration)';
   }
 
   @override
@@ -316,7 +332,9 @@ class _$AttendanceModelImpl implements _AttendanceModel {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            (identical(other.duration, duration) ||
+                other.duration == duration));
   }
 
   @JsonKey(ignore: true)
@@ -334,7 +352,8 @@ class _$AttendanceModelImpl implements _AttendanceModel {
       punchoutNote,
       punchoutOffset,
       createdAt,
-      updatedAt);
+      updatedAt,
+      duration);
 
   @JsonKey(ignore: true)
   @override
@@ -364,7 +383,8 @@ abstract class _AttendanceModel implements AttendanceModel {
       final String? punchoutNote,
       final int? punchoutOffset,
       final DateTime? createdAt,
-      final DateTime? updatedAt}) = _$AttendanceModelImpl;
+      final DateTime? updatedAt,
+      final double? duration}) = _$AttendanceModelImpl;
 
   factory _AttendanceModel.fromJson(Map<String, dynamic> json) =
       _$AttendanceModelImpl.fromJson;
@@ -393,6 +413,8 @@ abstract class _AttendanceModel implements AttendanceModel {
   DateTime? get createdAt;
   @override
   DateTime? get updatedAt;
+  @override
+  double? get duration;
   @override
   @JsonKey(ignore: true)
   _$$AttendanceModelImplCopyWith<_$AttendanceModelImpl> get copyWith =>

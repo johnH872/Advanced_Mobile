@@ -16,4 +16,7 @@ abstract class AttendanceApiService {
 
   @POST('PunchInOutMobile/{isPunchIn}/{id}')
   Future<HttpResponse<ServiceResponse<bool>>> punchInOutMobile(@Body() Map<String, dynamic> attendanceEntityJson, @Path('isPunchIn') bool isPunchIn, @Path('id') String userId);
+
+  @POST('GetAttendanceRange')
+  Future<HttpResponse<ServiceResponse<List<AttendanceModel>>>> getAttendanceRange(@Body() Map<String, dynamic> dataFilter, @Query('userId') String userId,  @Query('timezone') int timezone);
 }
