@@ -6,12 +6,14 @@ import 'package:hrm_mobile/features/informations/presentation/pages/employee_det
 import 'package:hrm_mobile/features/leave/presentation/pages/leave_request_history_screen.dart';
 
 const baseUrl = 'http://$baseIpAddress:5000/api';
-const baseIpAddress = "192.168.1.3";
+const baseIpAddress = "192.168.1.7";
 const defaultImageUrl = "https://img.favpng.com/3/21/23/computer-icons-mobile-app-development-android-png-favpng-9xKBGkE07CG2VqArV2AVqGNHk.jpg";
 enum SocketEventNames { PUNCHINOUT }
 const socketEvents = {
   SocketEventNames.PUNCHINOUT: 'PUNCHINOUT',
 };
+
+enum NotificationType { ATTENDANCE_REMINDER }
 
 /// Bottom navigation configuration.
 List<Widget> bottomNavigationScreens() =>

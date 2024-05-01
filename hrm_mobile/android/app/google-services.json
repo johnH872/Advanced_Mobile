@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "458604772374",
+    "project_id": "lh-hrm",
+    "storage_bucket": "lh-hrm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:458604772374:android:72ff02a3b6da06ab4dc937",
+        "android_client_info": {
+          "package_name": "com.example.hrm_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgBmW_8IUYY-SYKQWJy-9zcoKxz2Nksn8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'leave_type_api_services.dart';
+part of 'notification_api_services.dart';
 
 // **************************************************************************
 // RetrofitGenerator
@@ -8,12 +8,12 @@ part of 'leave_type_api_services.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
 
-class _LeaveTypeApiService implements LeaveTypeApiService {
-  _LeaveTypeApiService(
+class _NotificationApiService implements NotificationApiService {
+  _NotificationApiService(
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.7:5000/api/LeaveTypeManagement/';
+    baseUrl ??= 'http://192.168.1.7:5000/api/Notification/';
   }
 
   final Dio _dio;
@@ -21,14 +21,14 @@ class _LeaveTypeApiService implements LeaveTypeApiService {
   String? baseUrl;
 
   @override
-  Future<HttpResponse<ServiceResponse<List<LeaveTypeModel>>>>
-      getAllLeaveType() async {
+  Future<HttpResponse<ServiceResponse<List<NotificationModel>>>>
+      getAllNotification(String userId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<HttpResponse<ServiceResponse<List<LeaveTypeModel>>>>(
+        _setStreamType<HttpResponse<ServiceResponse<List<NotificationModel>>>>(
             Options(
       method: 'GET',
       headers: _headers,
@@ -36,7 +36,7 @@ class _LeaveTypeApiService implements LeaveTypeApiService {
     )
                 .compose(
                   _dio.options,
-                  'GetAllLeaveType',
+                  'GetAllNotification/${userId}',
                   queryParameters: queryParameters,
                   data: _data,
                 )
@@ -45,12 +45,12 @@ class _LeaveTypeApiService implements LeaveTypeApiService {
                   _dio.options.baseUrl,
                   baseUrl,
                 ))));
-    final value = ServiceResponse<List<LeaveTypeModel>>.fromJson(
+    final value = ServiceResponse<List<NotificationModel>>.fromJson(
       _result.data!,
       (json) => json is List<dynamic>
           ? json
-              .map<LeaveTypeModel>(
-                  (i) => LeaveTypeModel.fromJson(i as Map<String, dynamic>))
+              .map<NotificationModel>(
+                  (i) => NotificationModel.fromJson(i as Map<String, dynamic>))
               .toList()
           : List.empty(),
     );
@@ -59,22 +59,24 @@ class _LeaveTypeApiService implements LeaveTypeApiService {
   }
 
   @override
-  Future<HttpResponse<ServiceResponse<LeaveTypeModel>>> saveLeaveType(
-      Map<String, dynamic> leaveRequestJson) async {
+  Future<HttpResponse<ServiceResponse<bool>>> saveFCMToken(
+    Map<String, dynamic> token,
+    String userId,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(leaveRequestJson);
+    _data.addAll(token);
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<HttpResponse<ServiceResponse<LeaveTypeModel>>>(Options(
+        _setStreamType<HttpResponse<ServiceResponse<bool>>>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
     )
             .compose(
               _dio.options,
-              'SaveLeaveType',
+              'saveFCMToken/${userId}',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -83,9 +85,43 @@ class _LeaveTypeApiService implements LeaveTypeApiService {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ServiceResponse<LeaveTypeModel>.fromJson(
+    final value = ServiceResponse<bool>.fromJson(
       _result.data!,
-      (json) => LeaveTypeModel.fromJson(json as Map<String, dynamic>),
+      (json) => json as bool,
+    );
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<ServiceResponse<bool>>> markRead(
+    String userId,
+    String notificationId,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<HttpResponse<ServiceResponse<bool>>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'markRead/${userId}/${notificationId}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = ServiceResponse<bool>.fromJson(
+      _result.data!,
+      (json) => json as bool,
     );
     final httpResponse = HttpResponse(value, _result);
     return httpResponse;

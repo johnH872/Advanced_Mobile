@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:hrm_mobile/features/auth/presentation/pages/app_navigator.dart';
 import 'package:hrm_mobile/features/auth/presentation/pages/auth/login_screen.dart';
 import 'package:hrm_mobile/features/informations/presentation/provider/user_provider.dart';
 import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
+import 'package:hrm_mobile/features/notification/presentation/provider/notification_provider.dart';
 import 'package:hrm_mobile/injection_container.dart' as di;
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +19,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   await di.initializeDependencies();
   // SharedPreferences prefs = await SharedPreferences.getInstance();
   runApp(const MyApp());
@@ -75,6 +78,9 @@ class MyApp extends StatelessWidget {
                 ChangeNotifierProvider<LeaveProvider>(
                   create: (_) => di.sl<LeaveProvider>(),
                 ),
+                ChangeNotifierProvider<NotificationProvider>(
+                  create: (_) => di.sl<NotificationProvider>(),
+                ),
               ],
               child: BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
@@ -106,6 +112,7 @@ class MyApp extends StatelessWidget {
                         },
                         useDefaultLoading: false,
                         child: MaterialApp(
+                            navigatorKey: navigatorKey,
                             theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
                             darkTheme:
                                 ThemeData(useMaterial3: true, colorScheme: darkColorScheme, textTheme: textTheme),

@@ -38,7 +38,9 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  initSocket() {
+  initSocket() async {
+    final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: false);
+    var userId = await payloadUtil.getUserId();
     socket = IO.io('http://$baseIpAddress:5000', <String, dynamic>{
       'autoConnect': false,
       'transports': ['websocket'],
@@ -61,6 +63,7 @@ class _HomePageState extends State<HomePage> {
             content: '${isPunchIn ? 'Punch in' : 'Punch out'} sucessfully!',
           ),
         );
+        attendanceProvider.getCurrentAttendance(userId);
       }
     });
   }

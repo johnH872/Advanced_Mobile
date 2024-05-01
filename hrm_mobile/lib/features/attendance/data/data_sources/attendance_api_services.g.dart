@@ -13,7 +13,7 @@ class _AttendanceApiService implements AttendanceApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.3:5000/api/AttendanceManagement/';
+    baseUrl ??= 'http://192.168.1.7:5000/api/AttendanceManagement/';
   }
 
   final Dio _dio;

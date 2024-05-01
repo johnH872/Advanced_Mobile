@@ -33,6 +33,10 @@ import 'package:hrm_mobile/features/leave/domain/repository/leave_entitlement_re
 import 'package:hrm_mobile/features/leave/domain/repository/leave_request_repository.dart';
 import 'package:hrm_mobile/features/leave/domain/repository/leave_type_repository.dart';
 import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
+import 'package:hrm_mobile/features/notification/data/data_sources/notification_api_services.dart';
+import 'package:hrm_mobile/features/notification/data/repository/notification_repository_impl.dart';
+import 'package:hrm_mobile/features/notification/domain/repository/notification_repository.dart';
+import 'package:hrm_mobile/features/notification/presentation/provider/notification_provider.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 final sl = GetIt.instance;
@@ -56,6 +60,8 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<LeaveEntitlementRepository>(LeaveEntitlementRepositoryImpl(leaveEntitlementApiService:  sl()));
   sl.registerSingleton<DataStateApiService>(DataStateApiService(sl()));
   sl.registerSingleton<DataStateRepository>(DataStateRepositoryImpl(dataStateApiService:  sl()));
+  sl.registerSingleton<NotificationApiService>(NotificationApiService(sl()));
+  sl.registerSingleton<NotificationRepository>(NotificationRepositoryImpl(notificationApiService:  sl()));
   
   //UseCases
   sl.registerLazySingleton(() => LoginUseCase(authRepository: sl()));
@@ -69,6 +75,7 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<UserProvider>(()=> UserProvider());
   sl.registerFactory<AttendanceProvider>(()=> AttendanceProvider());
   sl.registerFactory<LeaveProvider>(()=> LeaveProvider());
+  sl.registerFactory<NotificationProvider>(()=> NotificationProvider());
 
   // External
   sl.registerLazySingleton(() => InternetConnection());

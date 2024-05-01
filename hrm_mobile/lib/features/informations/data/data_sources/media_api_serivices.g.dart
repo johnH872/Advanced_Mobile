@@ -13,7 +13,7 @@ class _MediaApiService implements MediaApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.3:5000/api/MediaManagement/';
+    baseUrl ??= 'http://192.168.1.7:5000/api/MediaManagement/';
   }
 
   final Dio _dio;
