@@ -48,5 +48,12 @@ Map<String, double> get leaveSessions => {
   "Afternoon": 4
 };
 
+const kPrimaryColor = Color(0xFFFF8084);
+const kAccentColor = Color(0xFFF1F1F1);
+const kWhiteColor = Color(0xFFFFFFFF);
+const kLightColor = Color(0xFF808080);
+const kDarkColor = Color(0xFF303030);
+const kTransparent = Colors.transparent;
+const String logo = './assets/images/processing-time.png';
 
 

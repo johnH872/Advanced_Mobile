@@ -9,6 +9,7 @@ import 'package:hrm_mobile/features/attendance/presentation/provider/attendance_
 import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hrm_mobile/features/auth/presentation/widgets/success_dialog.dart';
 import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
+import 'package:hrm_mobile/features/notification/presentation/provider/notification_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -126,6 +127,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildHeaderWidget() {
+    final notificationProvider = Provider.of<NotificationProvider>(context, listen: true);
     return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
       if (state is LoggedOutState) {
         Navigator.of(context).pushNamedAndRemoveUntil('/login', (r) => false);
@@ -176,7 +178,25 @@ class _HomePageState extends State<HomePage> {
                   ]),
                 ],
               ),
-              const Icon(Icons.notifications, color: Colors.black)
+              // badges.Badge(
+              //   badgeContent: Text(notificationProvider.totalUnreadNoti.toString(), style: TextStyle(fontSize: 8),),
+              //   showBadge: notificationProvider.totalUnreadNoti > 0,
+              //   child: const Icon(Icons.notifications, color: Colors.black),
+              //   onTap: () {
+
+              //   },
+              // ),
+              IconButton(
+                  tooltip: "Notifications",
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/notifications');
+                  },
+                  icon: Badge(
+                    label: notificationProvider.totalUnreadNoti > 0
+                        ? Text(notificationProvider.totalUnreadNoti.toString())
+                        : null,
+                    child: const Icon(Icons.notifications, color: Colors.black),
+                  )),
             ],
           ),
         ]);
@@ -303,7 +323,7 @@ class _HomePageState extends State<HomePage> {
                             onPressed: () {},
                             child: Text(
                               DateFormat("HH:mm").format(
-                                  attendanceProvider.punchInRecords[attendanceProvider.punchoutRecords.length - 1]),
+                                  attendanceProvider.punchInRecords[attendanceProvider.punchInRecords.length - 1]),
                               style: const TextStyle(fontSize: 12),
                             )),
                   ],
