@@ -10,8 +10,11 @@ import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hrm_mobile/features/auth/presentation/pages/app_navigator.dart';
 import 'package:hrm_mobile/features/auth/presentation/pages/auth/login_screen.dart';
 import 'package:hrm_mobile/features/informations/presentation/provider/user_provider.dart';
+import 'package:hrm_mobile/features/leave/presentation/provider/datastate_provider.dart';
 import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
 import 'package:hrm_mobile/features/notification/presentation/provider/notification_provider.dart';
+import 'package:hrm_mobile/features/work_calendar/presentation/provider/setting_provider.dart';
+import 'package:hrm_mobile/features/work_calendar/presentation/provider/work_calendar_provider.dart';
 import 'package:hrm_mobile/injection_container.dart' as di;
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -80,6 +83,15 @@ class MyApp extends StatelessWidget {
                 ),
                 ChangeNotifierProvider<NotificationProvider>(
                   create: (_) => di.sl<NotificationProvider>(),
+                ),
+                ChangeNotifierProvider<WorkCalendarProvider>(
+                  create: (_) => di.sl<WorkCalendarProvider>(),
+                ),
+                ChangeNotifierProvider<SettingProvider>(
+                  create: (_) => di.sl<SettingProvider>(),
+                ),
+                ChangeNotifierProvider<DataStateProvider>(
+                  create: (_) => di.sl<DataStateProvider>(),
                 ),
               ],
               child: BlocBuilder<AuthBloc, AuthState>(

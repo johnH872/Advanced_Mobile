@@ -115,6 +115,12 @@ dependencies:
   #badges
   badges: ^3.1.2
 
+  #syncfusion
+  syncfusion_flutter_calendar: ^25.1.42
+
+  #color picker
+  flutter_colorpicker: ^1.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

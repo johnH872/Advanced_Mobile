@@ -32,37 +32,50 @@ import 'package:hrm_mobile/features/leave/domain/repository/datastate_repository
 import 'package:hrm_mobile/features/leave/domain/repository/leave_entitlement_repository.dart';
 import 'package:hrm_mobile/features/leave/domain/repository/leave_request_repository.dart';
 import 'package:hrm_mobile/features/leave/domain/repository/leave_type_repository.dart';
+import 'package:hrm_mobile/features/leave/presentation/provider/datastate_provider.dart';
 import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
 import 'package:hrm_mobile/features/notification/data/data_sources/notification_api_services.dart';
 import 'package:hrm_mobile/features/notification/data/repository/notification_repository_impl.dart';
 import 'package:hrm_mobile/features/notification/domain/repository/notification_repository.dart';
 import 'package:hrm_mobile/features/notification/presentation/provider/notification_provider.dart';
+import 'package:hrm_mobile/features/work_calendar/data/data_sources/setting_api_services.dart';
+import 'package:hrm_mobile/features/work_calendar/data/data_sources/work_calendar_api_services.dart';
+import 'package:hrm_mobile/features/work_calendar/data/repository/setting_repository_impl.dart';
+import 'package:hrm_mobile/features/work_calendar/data/repository/work_calendar_repository_impl.dart';
+import 'package:hrm_mobile/features/work_calendar/domain/repository/setting_repository.dart';
+import 'package:hrm_mobile/features/work_calendar/domain/repository/work_calendar_repository.dart';
+import 'package:hrm_mobile/features/work_calendar/presentation/provider/setting_provider.dart';
+import 'package:hrm_mobile/features/work_calendar/presentation/provider/work_calendar_provider.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
   sl.registerSingleton<Dio>(Dio());
-   // Dependencies
+  // Dependencies
   sl.registerSingleton<AuthApiService>(AuthApiService(sl()));
-  sl.registerSingleton<AuthRepository>(AuthRepositoryImpl(authApiService:  sl()));
+  sl.registerSingleton<AuthRepository>(AuthRepositoryImpl(authApiService: sl()));
   sl.registerSingleton<EmployeeApiService>(EmployeeApiService(sl()));
-  sl.registerSingleton<EmployeeRepository>(EmployeeRepositoryImpl(employeeApiService:  sl()));
+  sl.registerSingleton<EmployeeRepository>(EmployeeRepositoryImpl(employeeApiService: sl()));
   sl.registerSingleton<MediaApiService>(MediaApiService(sl()));
-  sl.registerSingleton<MediaRepository>(MediaRepositoryImpl(mediaApiService:  sl()));
+  sl.registerSingleton<MediaRepository>(MediaRepositoryImpl(mediaApiService: sl()));
   sl.registerSingleton<AttendanceApiService>(AttendanceApiService(sl()));
-  sl.registerSingleton<AttendanceRepository>(AttendanceRepositoryImpl(attendanceApiService:  sl()));
+  sl.registerSingleton<AttendanceRepository>(AttendanceRepositoryImpl(attendanceApiService: sl()));
   sl.registerSingleton<LeaveTypeApiService>(LeaveTypeApiService(sl()));
-  sl.registerSingleton<LeaveTypeRepository>(LeaveTypeRepositoryImpl(leaveTypeApiService:  sl()));
+  sl.registerSingleton<LeaveTypeRepository>(LeaveTypeRepositoryImpl(leaveTypeApiService: sl()));
   sl.registerSingleton<LeaveRequestApiService>(LeaveRequestApiService(sl()));
-  sl.registerSingleton<LeaveRequestRepository>(LeaveRequestRepositoryImpl(leaveRequestApiService:  sl()));
+  sl.registerSingleton<LeaveRequestRepository>(LeaveRequestRepositoryImpl(leaveRequestApiService: sl()));
   sl.registerSingleton<LeaveEntitlementApiService>(LeaveEntitlementApiService(sl()));
-  sl.registerSingleton<LeaveEntitlementRepository>(LeaveEntitlementRepositoryImpl(leaveEntitlementApiService:  sl()));
+  sl.registerSingleton<LeaveEntitlementRepository>(LeaveEntitlementRepositoryImpl(leaveEntitlementApiService: sl()));
   sl.registerSingleton<DataStateApiService>(DataStateApiService(sl()));
-  sl.registerSingleton<DataStateRepository>(DataStateRepositoryImpl(dataStateApiService:  sl()));
+  sl.registerSingleton<DataStateRepository>(DataStateRepositoryImpl(dataStateApiService: sl()));
   sl.registerSingleton<NotificationApiService>(NotificationApiService(sl()));
-  sl.registerSingleton<NotificationRepository>(NotificationRepositoryImpl(notificationApiService:  sl()));
-  
+  sl.registerSingleton<NotificationRepository>(NotificationRepositoryImpl(notificationApiService: sl()));
+  sl.registerSingleton<WorkCalendarApiService>(WorkCalendarApiService(sl()));
+  sl.registerSingleton<WorkCalendarRepository>(WorkCalendarRepositoryImpl(workCalendarApiService: sl()));
+  sl.registerSingleton<SettingApiService>(SettingApiService(sl()));
+  sl.registerSingleton<SettingRepository>(SettingRepositoryImpl(settingApiService: sl()));
+
   //UseCases
   sl.registerLazySingleton(() => LoginUseCase(authRepository: sl()));
   sl.registerLazySingleton(() => ChangePasswordUseCase(authRepository: sl()));
@@ -70,12 +83,16 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => SendOTPUseCase(authRepository: sl()));
 
   //Blocs
-  sl.registerFactory<AuthBloc>(()=> AuthBloc(logInUseCase: sl(), sendOTPUseCase: sl(), validateOTPUseCase: sl(), changePasswordUseCase: sl()));
-  sl.registerFactory<AppCubit>(()=> AppCubit());
-  sl.registerFactory<UserProvider>(()=> UserProvider());
-  sl.registerFactory<AttendanceProvider>(()=> AttendanceProvider());
-  sl.registerFactory<LeaveProvider>(()=> LeaveProvider());
-  sl.registerFactory<NotificationProvider>(()=> NotificationProvider());
+  sl.registerFactory<AuthBloc>(
+      () => AuthBloc(logInUseCase: sl(), sendOTPUseCase: sl(), validateOTPUseCase: sl(), changePasswordUseCase: sl()));
+  sl.registerFactory<AppCubit>(() => AppCubit());
+  sl.registerFactory<UserProvider>(() => UserProvider());
+  sl.registerFactory<AttendanceProvider>(() => AttendanceProvider());
+  sl.registerFactory<LeaveProvider>(() => LeaveProvider());
+  sl.registerFactory<NotificationProvider>(() => NotificationProvider());
+  sl.registerFactory<WorkCalendarProvider>(() => WorkCalendarProvider());
+  sl.registerFactory<SettingProvider>(() => SettingProvider());
+  sl.registerFactory<DataStateProvider>(() => DataStateProvider());
 
   // External
   sl.registerLazySingleton(() => InternetConnection());

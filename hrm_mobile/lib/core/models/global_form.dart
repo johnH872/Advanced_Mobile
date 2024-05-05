@@ -30,8 +30,7 @@ FormGroup get editUserForm => FormGroup({
     });
 
 FormGroup get employeeFilterForm => FormGroup({
-      'employeeName': FormControl<String>(
-      ),
+      'employeeName': FormControl<String>(),
       'gender': FormControl<String>(),
       'birth': FormControl<DateTimeRange>(),
       'nationality': FormControl<String>(),
@@ -54,6 +53,15 @@ FormGroup get leaveReuestFilterForm => FormGroup({
 FormGroup get dateRangeForm => FormGroup({
       'start': FormControl<DateTime>(validators: [Validators.required]),
       'end': FormControl<DateTime>(validators: [Validators.required]),
+    }, validators: [
+      const CompareValidator('start', 'end', CompareOption.lower)
+    ]);
+
+FormGroup get workCalendarDetailForm => FormGroup({
+      'start': FormControl<DateTime>(validators: [Validators.required]),
+      'end': FormControl<DateTime>(validators: [Validators.required]),
+      'description': FormControl<String>(validators: [Validators.required]),
+      'codeColor': FormControl<String>(validators: [Validators.required]),
     }, validators: [
       const CompareValidator('start', 'end', CompareOption.lower)
     ]);

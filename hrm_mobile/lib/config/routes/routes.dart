@@ -8,6 +8,7 @@ import 'package:hrm_mobile/features/informations/presentation/pages/employee_lis
 import 'package:hrm_mobile/features/leave/presentation/pages/leave_request_history_screen.dart';
 import 'package:hrm_mobile/features/leave/presentation/pages/leave_request_screen.dart';
 import 'package:hrm_mobile/features/notification/presentation/pages/notifications_screen.dart';
+import 'package:hrm_mobile/features/work_calendar/presentation/pages/work_calendar_screen.dart';
 
 class AppRoutes {
   static Route onGenerateRoutes(RouteSettings settings) {
@@ -46,6 +47,9 @@ class AppRoutes {
 
       case '/notifications':
         return _materialRoute(const NotificationsScreen());
+
+      case '/work-calendar':
+        return _materialRoute(const WorkCalendarScreen());
 
       default:
         return _materialRoute(const LoginScreen());

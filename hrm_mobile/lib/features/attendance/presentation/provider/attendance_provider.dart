@@ -118,7 +118,7 @@ class AttendanceProvider with ChangeNotifier {
           }
         }
         if(isBoth || !isWeek) {
-          listAttendances =response.data?.result ?? [];
+          listAttendances = response.data?.result ?? [];
         }
       }
     } catch (e) {}
