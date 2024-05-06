@@ -91,6 +91,29 @@ class WorkCalendarRepositoryImpl extends WorkCalendarRepository {
       return DataFailed(error);
     }
   }
+  
+  @override
+  Future<DataState<ServiceResponse<bool>>> removeWorkCalendarDetails(List<int> ids) async{
+    try {
+      final httpResponse = await workCalendarApiService.removeWorkCalendarDetails(ids.toString());
+      
+      if(httpResponse.response.statusCode == HttpStatus.ok) {
+        return DataSuccess(httpResponse.data);
+      } else {
+        return DataFailed(
+          DioException(
+            error: httpResponse.response.statusMessage,
+            response: httpResponse.response,
+            type: DioExceptionType.badResponse,
+            message: "Error",
+            requestOptions: httpResponse.response.requestOptions,
+          )
+        );
+      }
+    } on DioException catch(error) {
+      return DataFailed(error);
+    }
+  }
 
 
 }

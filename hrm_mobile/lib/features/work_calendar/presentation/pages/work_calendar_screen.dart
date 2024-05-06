@@ -91,23 +91,27 @@ class _WorkCalendarScreenState extends State<WorkCalendarScreen> {
           workCalendarProvider.updateCalendarData(
               leaveProvider.myListLeaveRequest, attendanceProvider.listAttendances, dataStateProvider.leaveStates);
         },
-        onTap: (calendarTapDetails) => {onClickWorkingTimeAppoitment(calendarTapDetails, context)},
+        onTap: (calendarTapDetails) => {onClickWorkingTimeAppoitment(calendarTapDetails, context, initData)},
       ),
     );
   }
 }
 
-onClickWorkingTimeAppoitment(CalendarTapDetails calendarTapDetails, BuildContext context) async {
+onClickWorkingTimeAppoitment(CalendarTapDetails calendarTapDetails, BuildContext context, Future<void> Function() initData) async {
   if (calendarTapDetails.appointments == null || calendarTapDetails.appointments!.isEmpty) return;
   if (calendarTapDetails.appointments![0] is WorkCalendarEntity &&
       calendarTapDetails.targetElement == CalendarElement.appointment) {
-        print(calendarTapDetails.appointments![0]);
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => WorkCalendarDetailScreen(
-          workCalendarEntity: calendarTapDetails.appointments![0],
-        ),
+    showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => WorkCalendarDetailScreen(
+        workCalendarEntity: calendarTapDetails.appointments![0],
       ),
+    ).then(
+      (result) async {
+        if (result != null && result) {
+          await initData();
+        }
+      },
     );
   }
 }
@@ -142,16 +146,12 @@ class WorkCalendarDataSource extends CalendarDataSource {
   DateTime getEndTime(int index) {
     DateTime result = DateTime.now();
     if (appointments![index] is WorkCalendarEntity) {
-      var lunchHour = int.parse(settingProvider.afternoonStartTime.split(':')[0]) -
-          int.parse(settingProvider.morningEndTime.split(':')[0]);
-      var morningStartHour =
-          settingProvider.morningStartTime != '' ? int.parse(settingProvider.morningStartTime.split(':')[0]) : 0;
-      var morningStartMinute =
-          settingProvider.morningStartTime != '' ? int.parse(settingProvider.morningStartTime.split(':')[1]) : 0;
+      var afternoonEndHour =
+          settingProvider.afternoonEndTime != '' ? int.parse(settingProvider.afternoonEndTime.split(':')[0]) : 0;
+      var afternoonEndMinute =
+          settingProvider.afternoonEndTime != '' ? int.parse(settingProvider.afternoonEndTime.split(':')[1]) : 0;
       var localDate = appointments![index].workingDate.toLocal();
-      result = DateTime(localDate.year, localDate.month, localDate.day, morningStartHour, morningStartMinute);
-      var workingMinutes = (appointments![index].workingHour * 60).toInt() + (lunchHour * 60);
-      result = result.add(Duration(minutes: workingMinutes));
+      result = DateTime(localDate.year, localDate.month, localDate.day, afternoonEndHour, afternoonEndMinute);
     }
     if (appointments![index] is LeaveRequestEntity) {
       result = appointments![index].leaveDateTo.toLocal();
@@ -168,13 +168,13 @@ class WorkCalendarDataSource extends CalendarDataSource {
   String getSubject(int index) {
     var subject = '';
     if (appointments![index] is WorkCalendarEntity) {
-      subject = "Working time";
+      subject = 'Working time - ${appointments![index].workingHour} hours';
     }
     if (appointments![index] is LeaveRequestEntity) {
       subject = "Leave time";
     }
     if (appointments![index] is AttendanceEntity) {
-      subject = "Attendance time";
+      subject = 'Attendance time';
     }
     return subject;
   }

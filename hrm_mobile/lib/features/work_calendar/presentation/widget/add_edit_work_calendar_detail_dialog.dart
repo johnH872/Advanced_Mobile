@@ -4,14 +4,19 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hrm_mobile/core/models/global_form.dart';
 import 'package:hrm_mobile/core/util/common.dart';
 import 'package:hrm_mobile/features/work_calendar/domain/entity/work_calendar_detail_entity.dart';
+import 'package:hrm_mobile/features/work_calendar/domain/entity/work_calendar_entity.dart';
+import 'package:hrm_mobile/features/work_calendar/presentation/provider/work_calendar_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:reactive_date_time_picker/reactive_date_time_picker.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:provider/provider.dart';
 
 class AddEditWorkCalendarDetailDialog extends StatefulHookWidget {
-  final WorkCalendarDetailEntity? entity;
-  const AddEditWorkCalendarDetailDialog({Key? key, this.entity}) : super(key: key);
+  final WorkCalendarDetailEntity? workCalendarDetailEntity;
+  final WorkCalendarEntity? workCalendarEntity;
+  const AddEditWorkCalendarDetailDialog({Key? key, this.workCalendarDetailEntity, required this.workCalendarEntity})
+      : super(key: key);
 
   @override
   State<AddEditWorkCalendarDetailDialog> createState() => _AddEditWorkCalendarDetailDialogState();
@@ -21,8 +26,8 @@ class _AddEditWorkCalendarDetailDialogState extends State<AddEditWorkCalendarDet
   late FormGroup _form;
   late FormGroup _initialForm;
   final commonUtil = CommonUtil();
-  Color pickerColor = const Color(0xff443a49);
-  Color currentColor = const Color(0xff443a49);
+  Color pickerColor = const Color.fromARGB(255, 41, 64, 198);
+  Color currentColor = const Color.fromARGB(255, 41, 64, 198);
   @override
   void initState() {
     initForm();
@@ -32,21 +37,21 @@ class _AddEditWorkCalendarDetailDialogState extends State<AddEditWorkCalendarDet
   void initForm() {
     _initialForm = workCalendarDetailForm;
     _form = workCalendarDetailForm;
-    if (widget.entity != null) {
-      DateTime entityStart = DateFormat('hh:mm a').parse(widget.entity?.from ?? '00:00 AM');
-      DateTime entityEnd = DateFormat('hh:mm a').parse(widget.entity?.to ?? '11:59 PM');
+    if (widget.workCalendarDetailEntity != null) {
+      DateTime entityStart = DateFormat('hh:mm a').parse(widget.workCalendarDetailEntity?.from ?? '00:00 AM');
+      DateTime entityEnd = DateFormat('hh:mm a').parse(widget.workCalendarDetailEntity?.to ?? '11:59 PM');
       var startDate = DateTime(1970, 1, 1, entityStart.hour, entityStart.minute);
       var endDate = DateTime(1970, 1, 1, entityEnd.hour, entityEnd.minute);
       _initialForm.control('start').updateValue(startDate);
       _initialForm.control('end').updateValue(endDate);
-      _initialForm.control('description').updateValue(widget.entity?.description ?? '');
-      _initialForm.control('codeColor').updateValue(widget.entity?.codeColor ?? '');
+      _initialForm.control('description').updateValue(widget.workCalendarDetailEntity?.description ?? '');
+      _initialForm.control('codeColor').updateValue(widget.workCalendarDetailEntity?.codeColor ?? '');
       _form.control('start').updateValue(startDate);
       _form.control('end').updateValue(endDate);
-      _form.control('description').updateValue(widget.entity?.description ?? '');
-      _form.control('codeColor').updateValue(widget.entity?.codeColor ?? '');
-      currentColor = commonUtil.hexToColor(widget.entity?.codeColor ?? '');
-      pickerColor = commonUtil.hexToColor(widget.entity?.codeColor ?? '');
+      _form.control('description').updateValue(widget.workCalendarDetailEntity?.description ?? '');
+      _form.control('codeColor').updateValue(widget.workCalendarDetailEntity?.codeColor ?? '');
+      currentColor = commonUtil.hexToColor(widget.workCalendarDetailEntity?.codeColor ?? '');
+      pickerColor = commonUtil.hexToColor(widget.workCalendarDetailEntity?.codeColor ?? '');
     } else {
       var currentDate = DateTime(1970, 1, 1);
       _initialForm.control('start').updateValue(currentDate);
@@ -56,7 +61,7 @@ class _AddEditWorkCalendarDetailDialogState extends State<AddEditWorkCalendarDet
       _form.control('start').updateValue(currentDate);
       _form.control('end').updateValue(currentDate);
       _form.control('description').updateValue('');
-      _form.control('codeColor').updateValue('');
+      _form.control('codeColor').updateValue(('#${pickerColor.value.toRadixString(16).substring(2).padLeft(6, '0')}'));
     }
   }
 
@@ -66,6 +71,7 @@ class _AddEditWorkCalendarDetailDialogState extends State<AddEditWorkCalendarDet
 
   @override
   Widget build(BuildContext context) {
+    final workCalendarProvider = Provider.of<WorkCalendarProvider>(context, listen: false);
     return SimpleDialog(
       title: const Text('Edit detail'),
       contentPadding: const EdgeInsets.only(top: 15, left: 20, right: 20),
@@ -89,7 +95,6 @@ class _AddEditWorkCalendarDetailDialogState extends State<AddEditWorkCalendarDet
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.only(left: 12),
                   labelText: 'From',
-                  // hintText: DateFormat("HH:mm").format(widget.start).toString(),
                   border: OutlineInputBorder(),
                   suffixIcon: Icon(Icons.calendar_today),
                 ),
@@ -112,7 +117,6 @@ class _AddEditWorkCalendarDetailDialogState extends State<AddEditWorkCalendarDet
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.only(left: 12),
                   labelText: 'To',
-                  // hintText: DateFormat("EEE, dd MMM yyyy HH:mm").format(widget.start).toString(),
                   border: OutlineInputBorder(),
                   suffixIcon: Icon(Icons.calendar_today),
                 ),
@@ -171,7 +175,7 @@ class _AddEditWorkCalendarDetailDialogState extends State<AddEditWorkCalendarDet
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(onPressed: () => Navigator.pop(context, _initialForm), child: const Text("Cancel")),
+                  TextButton(onPressed: () => Navigator.pop(context, widget.workCalendarDetailEntity), child: const Text("Cancel")),
                   const SizedBox(
                     width: 10,
                   ),
@@ -180,13 +184,36 @@ class _AddEditWorkCalendarDetailDialogState extends State<AddEditWorkCalendarDet
                         DateTime startDate = _form.control('start').value as DateTime;
                         DateTime endDate = _form.control('end').value as DateTime;
                         if (startDate.isBefore(endDate)) {
-                          Navigator.pop(context, _form);
+                          var saveModel = WorkCalendarDetailEntity();
+                          if (widget.workCalendarDetailEntity != null) {
+                            saveModel = WorkCalendarDetailEntity(
+                                workCalendarDetailId: widget.workCalendarDetailEntity?.workCalendarDetailId,
+                                workCalendarId: widget.workCalendarDetailEntity?.workCalendarId,
+                                createdAt: widget.workCalendarDetailEntity?.createdAt,
+                                updatedAt: widget.workCalendarDetailEntity?.updatedAt,
+                                from: DateFormat('hh:mm a').format(_form.control('start').value),
+                                to: DateFormat('hh:mm a').format(_form.control('end').value),
+                                description: _form.control('description').value,
+                                codeColor: _form.control('codeColor').value);
+                          } else {
+                            saveModel = WorkCalendarDetailEntity(
+                                workCalendarDetailId: null,
+                                workCalendarId: widget.workCalendarEntity?.workCalendarId,
+                                createdAt: null,
+                                updatedAt: null,
+                                from: DateFormat('hh:mm a').format(_form.control('start').value),
+                                to: DateFormat('hh:mm a').format(_form.control('end').value),
+                                description: _form.control('description').value,
+                                codeColor: _form.control('codeColor').value);
+                          }
+                          workCalendarProvider.saveWorkCalendarDetail(context, saveModel);
+                          Navigator.pop(context, saveModel);
                         } else {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(const SnackBar(content: Text("Wrong start and end date!")));
                         }
                       },
-                      child: const Text("OK"))
+                      child: const Text("Save"))
                 ],
               ),
             )),

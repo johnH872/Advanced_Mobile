@@ -3,19 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:hrm_mobile/core/util/payload_util.dart';
 import 'package:hrm_mobile/core/widgets/app_bar_widget.dart';
-import 'package:hrm_mobile/features/attendance/presentation/provider/attendance_provider.dart';
-import 'package:hrm_mobile/features/leave/presentation/provider/datastate_provider.dart';
-import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
-import 'package:hrm_mobile/features/work_calendar/data/models/work_calendar_detail_model.dart';
 import 'package:hrm_mobile/features/work_calendar/domain/entity/work_calendar_detail_entity.dart';
 import 'package:hrm_mobile/features/work_calendar/domain/entity/work_calendar_entity.dart';
-import 'package:hrm_mobile/features/work_calendar/presentation/provider/setting_provider.dart';
 import 'package:hrm_mobile/features/work_calendar/presentation/provider/work_calendar_provider.dart';
 import 'package:hrm_mobile/features/work_calendar/presentation/widget/add_edit_work_calendar_detail_dialog.dart';
+import 'package:hrm_mobile/features/work_calendar/presentation/widget/confirm_dialog.dart';
 import 'package:hrm_mobile/features/work_calendar/presentation/widget/work_calendar_detail_tile.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:reactive_forms/reactive_forms.dart';
 
 class WorkCalendarDetailScreen extends StatefulWidget {
   final WorkCalendarEntity workCalendarEntity;
@@ -36,32 +30,35 @@ class _WorkCalendarDetailState extends State<WorkCalendarDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final workCalendarProvider = Provider.of<WorkCalendarProvider>(context, listen: false);
+
     return Scaffold(
       appBar: CustomAppBar(
         title: "Work details",
         leadingIcon: IconButton(
             icon: const Icon(Icons.keyboard_arrow_left),
-            onPressed: () async {
-              final workCalendarProvider = Provider.of<WorkCalendarProvider>(context, listen: false);
-              final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: false);
-              final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
-              final settingProvider = Provider.of<SettingProvider>(context, listen: false);
-              final dataStateProvider = Provider.of<DataStateProvider>(context, listen: false);
-
-              var userId = await payloadUtil.getUserId();
-              await workCalendarProvider.getWorkCalendarByUserId(context);
-              await settingProvider.getGlobalWorkingTimes(context);
-              await attendanceProvider.getAttendanceRange(userId, workCalendarProvider.dayFilterRange, true, false);
-              await leaveProvider.getLeaveRequestByFilter(context, workCalendarProvider.dayFilterRange);
-              await dataStateProvider.getLeaveDataStates();
-              workCalendarProvider.updateCalendarData(
-                  leaveProvider.myListLeaveRequest, attendanceProvider.listAttendances, dataStateProvider.leaveStates);
-              if (context.mounted) Navigator.of(context).pop();
+            onPressed: () {
+              if (context.mounted) Navigator.of(context).pop(true);
             }),
         isDisableBellIcon: true,
         button_1: IconButton(
           icon: const Icon(Icons.add),
-          onPressed: () => {},
+          onPressed: () => {
+            showDialog<WorkCalendarDetailEntity>(
+              context: context,
+              builder: (BuildContext context) => AddEditWorkCalendarDetailDialog(
+                workCalendarEntity: widget.workCalendarEntity,
+              ),
+            ).then(
+              (model) {
+                if (model != null) {
+                  setState(() {
+                    workCalendarDetails = [...workCalendarDetails, model];
+                  });
+                }
+              },
+            ),
+          },
         ),
       ),
       body: ListView.separated(
@@ -75,27 +72,42 @@ class _WorkCalendarDetailState extends State<WorkCalendarDetailScreen> {
             codeColor: workCalendarDetails[index].codeColor ?? '',
             enable: true,
             onTap: () => {
-              showDialog<FormGroup>(
+              showDialog<WorkCalendarDetailEntity>(
                 context: context,
                 builder: (BuildContext context) => AddEditWorkCalendarDetailDialog(
-                  entity: workCalendarDetails[index],
+                  workCalendarDetailEntity: workCalendarDetails[index],
+                  workCalendarEntity: widget.workCalendarEntity,
                 ),
               ).then(
-                (form) {
-                  var newWorkCalendarDetail = WorkCalendarDetailModel(
-                      workCalendarId: workCalendarDetails[index].workCalendarId,
-                      createdAt: workCalendarDetails[index].createdAt,
-                      updatedAt: workCalendarDetails[index].updatedAt,
-                      workCalendarDetailId: workCalendarDetails[index].workCalendarDetailId,
-                      from: DateFormat('hh:mm a').format(form?.control('start').value),
-                      to: DateFormat('hh:mm a').format(form?.control('end').value),
-                      description: form?.control('description').value,
-                      codeColor: form?.control('codeColor').value);
-                  setState(() {
-                    workCalendarDetails[index] = newWorkCalendarDetail;
-                  });
+                (model) {
+                  if (model != null) {
+                    setState(() {
+                      workCalendarDetails[index] = model;
+                    });
+                  }
                 },
-              )
+              ),
+            },
+            onLongPress: () => {
+              showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) => ConfirmDialog(
+                  title: 'Action',
+                  content: 'Do you wish to delete this record?',
+                  onClickOk: () async {
+                    await workCalendarProvider.removeWorkCalendarDetails(
+                        context, workCalendarDetails[index].workCalendarDetailId ?? 0);
+                  },
+                ),
+              ).then(
+                (isSuccess) {
+                  if (isSuccess != null && isSuccess) {
+                    setState(() {
+                      workCalendarDetails.removeAt(index);
+                    });
+                  }
+                },
+              ),
             },
             key: null,
           );

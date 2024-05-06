@@ -4,7 +4,7 @@ import 'package:hrm_mobile/core/util/common.dart';
 
 class WorkCalendarDetailTiles extends StatelessWidget {
   final String title, subtitle, codeColor;
-  final Function()? onTap;
+  final Function()? onTap, onLongPress;
   final bool enable;
   const WorkCalendarDetailTiles(
       {required this.title,
@@ -12,6 +12,7 @@ class WorkCalendarDetailTiles extends StatelessWidget {
       required this.codeColor,
       required this.onTap,
       required this.enable,
+      required this.onLongPress,
       super.key});
 
   @override
@@ -20,11 +21,6 @@ class WorkCalendarDetailTiles extends StatelessWidget {
     return ListTile(
       dense: true,
       visualDensity: const VisualDensity(horizontal: 0, vertical: -1),
-      // minVerticalPadding: 0,
-      // leading: Container(
-      //     height: 35.0,
-      //     width: 35.0,
-      //     decoration: const BoxDecoration(image: DecorationImage(image: AssetImage(logo), fit: BoxFit.cover))),
       title: Text(title, style: const TextStyle(color: kDarkColor, fontSize: 14)),
       subtitle: Text(subtitle, style: const TextStyle(color: kLightColor, fontSize: 12)),
       trailing: CircleAvatar(
@@ -32,6 +28,7 @@ class WorkCalendarDetailTiles extends StatelessWidget {
         radius: 10,
       ),
       onTap: onTap,
+      onLongPress: onLongPress,
       enabled: enable,
     );
   }

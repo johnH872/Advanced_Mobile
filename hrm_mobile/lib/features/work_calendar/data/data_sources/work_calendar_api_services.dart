@@ -20,4 +20,7 @@ abstract class WorkCalendarApiService {
 
   @POST('GetWorkCalendarByUserId')
   Future<HttpResponse<ServiceResponse<List<WorkCalendarsModel>>>> getWorkCalendarByUserId(@Body() Map<String, dynamic> dataFilter);
+
+  @POST('RemoveWorkCalendarDetails')
+  Future<HttpResponse<ServiceResponse<bool>>> removeWorkCalendarDetails(@Body() String ids);
 }

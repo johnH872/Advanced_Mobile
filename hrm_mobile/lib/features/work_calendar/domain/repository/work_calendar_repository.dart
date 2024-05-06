@@ -8,4 +8,5 @@ abstract class WorkCalendarRepository {
   Future<DataState<ServiceResponse<List<WorkCalendarEntity>>>> getWorkCalendarByUserId(List<String> userId, DateTimeRange dateRangeModel);
   Future<DataState<ServiceResponse<WorkCalendarEntity>>> saveWorkCalendar(WorkCalendarEntity workCalendarEntity);
   Future<DataState<ServiceResponse<WorkCalendarDetailEntity>>> saveWorkCalendarDetail(WorkCalendarDetailEntity workCalendarDetailEntity);
+  Future<DataState<ServiceResponse<bool>>> removeWorkCalendarDetails(List<int> ids);
 }

@@ -6,6 +6,7 @@ import 'package:hrm_mobile/features/attendance/domain/entity/attendance_entity.d
 import 'package:hrm_mobile/features/leave/domain/entity/datastate_entity.dart';
 import 'package:hrm_mobile/features/leave/domain/entity/leave_request_entity.dart';
 import 'package:hrm_mobile/features/leave/domain/repository/datastate_repository.dart';
+import 'package:hrm_mobile/features/work_calendar/domain/entity/work_calendar_detail_entity.dart';
 import 'package:hrm_mobile/features/work_calendar/domain/entity/work_calendar_entity.dart';
 import 'package:hrm_mobile/features/work_calendar/domain/repository/work_calendar_repository.dart';
 import 'package:hrm_mobile/injection_container.dart';
@@ -48,15 +49,65 @@ class WorkCalendarProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  saveWorkCalendarDetail(BuildContext context, WorkCalendarDetailEntity workCalendarDetailEntity) async {
+    if (context.mounted) context.loaderOverlay.show();
+    final response = await workCalendarRepository.saveWorkCalendarDetail(workCalendarDetailEntity);
+    if (response.data != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Save work calendar detail successfully!',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+    if (context.mounted) context.loaderOverlay.hide();
+    notifyListeners();
+  }
+
   changeDateRange(BuildContext context, DateTime start, DateTime end) async {
     dayFilterRange = DateTimeRange(start: start, end: end);
     await getWorkCalendarByUserId(context);
   }
 
-  updateCalendarData(List<LeaveRequestEntity> leaveRequests, List<AttendanceEntity> attendances, List<DataStateEntity> leaveStates) {
-    int approvedLeaveStateId = leaveStates.firstWhere((element) => element.dataStateName == 'APPROVED').dataStateId ?? 2;
+  updateCalendarData(
+      List<LeaveRequestEntity> leaveRequests, List<AttendanceEntity> attendances, List<DataStateEntity> leaveStates) {
+    int approvedLeaveStateId =
+        leaveStates.firstWhere((element) => element.dataStateName == 'APPROVED').dataStateId ?? 2;
     var approvedLeaves = leaveRequests.where((element) => element.status == approvedLeaveStateId).toList();
     _calendarDataSource.clear();
     _calendarDataSource = [...allWorkCalendar, ...approvedLeaves, ...attendances];
+    notifyListeners();
+  }
+
+  removeWorkCalendarDetails(BuildContext context, int id) async {
+    if(id == 0) return;
+    if (context.mounted) context.loaderOverlay.show();
+    final response = await workCalendarRepository.removeWorkCalendarDetails([id]);
+    if (response.data != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Remove detail successfully!',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.green.shade800,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Remove detail failed!',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red.shade800,
+        ),
+      );
+    }
+    if (context.mounted) context.loaderOverlay.hide();
+    notifyListeners();
   }
 }
