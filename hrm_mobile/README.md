@@ -1,16 +1,6 @@
-# hrm_mobile
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Step 1: Open the app's source code in Visual Studio Code IDE.
+Step 2: Enter the command "flutter pub get" to install necessary packages.
+Step 3: After running the command "flutter pub get," proceed to open the pubspec.yaml file and check in the "dependencies" section to see if all necessary packages with their required versions are available or not.
+Step 4: Enter the command "flutter pub add <package name>" to install any missing packages if any of the required packages are not present.
+Step 5: Press the key combination Ctrl + Shift + P and select "Flutter: Select Device," then choose the virtual device to run.
+Step 6: Enter the command "flutter run" to start the program.
