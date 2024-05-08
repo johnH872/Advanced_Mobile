@@ -133,7 +133,7 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
                                         : userProvider.currentUser!.userId,
                                     ownerId: widget.isMyProfile
                                         ? userProvider.loggedInUser!.ownerId
-                                        : userProvider.currentUser!.userId);
+                                        : userProvider.currentUser!.ownerId);
                                 var result = await userProvider.saveEmployee(saveUser, widget.isMyProfile);
                                 if (result) {
                                   const snackBar = SnackBar(
@@ -334,13 +334,13 @@ Widget _buildProfileEditor(BuildContext context, FormGroup form, bool isMyProfil
                                           ? '${userProvider.loggedInUser!.manager?.firstName ?? ""} ${userProvider.loggedInUser!.manager?.middleName ?? ""} ${userProvider.loggedInUser!.manager?.lastName ?? ""}'
                                           : '${userProvider.currentUser!.manager?.firstName ?? ""} ${userProvider.currentUser!.manager?.middleName ?? ""} ${userProvider.currentUser!.manager?.lastName ?? ""}'),
                                       subtitle: Text(isMyProfile
-                                          ? userProvider.loggedInUser!.manager!.email ?? "No email"
-                                          : userProvider.currentUser?.manager!.email ?? "No email"),
+                                          ? userProvider.loggedInUser?.manager?.email ?? "No email"
+                                          : userProvider.currentUser?.manager?.email ?? "No email"),
                                       leading: CircleAvatar(
                                         radius: 20,
                                         backgroundImage: NetworkImage(isMyProfile
-                                            ? userProvider.loggedInUser?.manager!.avatarUrl ?? defaultImageUrl
-                                            : userProvider.currentUser?.manager!.avatarUrl ?? defaultImageUrl),
+                                            ? userProvider.loggedInUser?.manager?.avatarUrl ?? defaultImageUrl
+                                            : userProvider.currentUser?.manager?.avatarUrl ?? defaultImageUrl),
                                       ),
                                     );
                                   },

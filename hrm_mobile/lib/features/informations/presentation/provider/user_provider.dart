@@ -121,7 +121,7 @@ class UserProvider with ChangeNotifier {
         result = false;
       }
       if (response.data != null) {
-        isMyProfile ? loggedInUser = userEntity : currentUser = userEntity;
+        isMyProfile ? loggedInUser = response.data?.result : currentUser = response.data?.result;
         result = true;
       }
     } catch (e) {}

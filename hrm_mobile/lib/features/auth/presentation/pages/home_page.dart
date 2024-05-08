@@ -10,6 +10,7 @@ import 'package:hrm_mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hrm_mobile/features/auth/presentation/widgets/success_dialog.dart';
 import 'package:hrm_mobile/features/leave/presentation/provider/leave_provider.dart';
 import 'package:hrm_mobile/features/notification/presentation/provider/notification_provider.dart';
+import 'package:hrm_mobile/features/work_calendar/presentation/provider/setting_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -55,8 +56,8 @@ class _HomePageState extends State<HomePage> {
     socket.onError((err) => print(err));
 
     socket.on(socketEvents[SocketEventNames.PUNCHINOUT]!, (data) {
-      bool isPunchIn = data == 'ISPUNCHIN';
-      if (context.mounted) {
+      bool isPunchIn = data['type'] == 'PUNCHIN';
+      if (context.mounted && data['employeeId'] == userId) {
         showDialog<String>(
           context: context,
           builder: (BuildContext context) => SuccessDialog(
@@ -70,11 +71,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> initData() async {
+    final settingProvider = Provider.of<SettingProvider>(context, listen: false);
+    final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: false);
+    final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
     var userId = await payloadUtil.getUserId();
     if (!context.mounted) return;
-    final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
-    final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: false);
-    await leaveProvider.setUpData(null, context);
+    await settingProvider.getGlobalWorkingTimes(context);
+    await leaveProvider.setUpData(null, null, context);
     await attendanceProvider.getCurrentAttendance(userId);
   }
 
@@ -282,6 +285,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _builderPunchedStatus() {
     final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: true);
+    final settingProvider = Provider.of<SettingProvider>(context, listen: true);
     return Container(
         width: 340,
         height: 144,
@@ -309,9 +313,9 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(
                       height: 5,
                     ),
-                    const Text(
-                      '08:30 AM',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Text(
+                      settingProvider.morningStartTime,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     attendanceProvider.punchInRecords.isEmpty
                         ? ButtonTheme(
@@ -352,9 +356,9 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(
                       height: 5,
                     ),
-                    const Text(
-                      '05:30 PM',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Text(
+                      settingProvider.afternoonEndTime,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     attendanceProvider.punchoutRecords.isEmpty
                         ? ButtonTheme(
@@ -714,7 +718,7 @@ class _HomePageState extends State<HomePage> {
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        leaveProvider.remainLeaves[1].toStringAsFixed(1).padLeft(4, '0'),
+                        leaveProvider.remainLeaves[2].toStringAsFixed(1).padLeft(4, '0'),
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                       Text(

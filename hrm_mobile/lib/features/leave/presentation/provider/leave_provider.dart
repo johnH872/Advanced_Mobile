@@ -34,7 +34,7 @@ class LeaveProvider with ChangeNotifier {
   List<int> availableListTypeIds = [];
   final PayloadUtil payloadUtil = PayloadUtil();
 
-  List<double> remainLeaves = List.generate(4, (index) => 0);
+  List<double> remainLeaves = List.generate(4, (index) => 0.0);
 
   bool isSaving = false;
   String userId = "";
@@ -64,7 +64,7 @@ class LeaveProvider with ChangeNotifier {
     }
   }
 
-  Future<void> setUpData(UserEntity? userEntity, BuildContext? context) async {
+  Future<void> setUpData(UserEntity? userEntity, LeaveRequestEntity? leaveRequestEntityInput, BuildContext? context) async {
     if (context != null && context.mounted) context.loaderOverlay.show();
     try {
       // Handle for assign leave request or submit leave request
@@ -95,8 +95,14 @@ class LeaveProvider with ChangeNotifier {
 
       // Update UI data
       if (availableListTypeIds.isNotEmpty) {
-        leaveRequestEntity.leaveEntitlementId = _myListLeaveEntilement[0].leaveEntitlementId;
-        leaveTypeName = availableListTypeNames[0];
+        if (leaveRequestEntityInput == null) {
+          leaveRequestEntity.leaveEntitlementId = _myListLeaveEntilement[0].leaveEntitlementId;
+          leaveTypeName = availableListTypeNames[0];
+        } else {
+          leaveRequestEntity.leaveEntitlementId = leaveRequestEntityInput.leaveEntitlementId;
+          var leaveTypeId = _myListLeaveEntilement.firstWhere((element) => element.leaveEntitlementId == leaveRequestEntityInput.leaveEntitlementId).leaveTypeId;
+          leaveTypeName = _listLeaveType.firstWhere((element) => element.leaveTypeId == leaveTypeId).leaveTypeName ?? "No available";
+        }
       }
     } catch (e) {
       print(e);
@@ -123,28 +129,60 @@ class LeaveProvider with ChangeNotifier {
       if (response.data != null) {
         _myListLeaveEntilement = response.data?.result ?? [];
         for (var i = 0; i < _myListLeaveEntilement.length; i++) {
-          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Annually').firstOrNull != null) {
-                remainLeaves[0] = 
-                _myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Annually').firstOrNull?.usableLeave ?? 0.0 - 
-                (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Annually').firstOrNull?.usedLeave ?? 0.0);
+          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Annually').firstOrNull !=
+              null) {
+            remainLeaves[0] = _myListLeaveEntilement
+                    .where((element) => element.LeaveType?.leaveTypeName == 'Annually')
+                    .firstOrNull
+                    ?.usableLeave ??
+                0.0 -
+                    (_myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'Annually')
+                            .firstOrNull
+                            ?.usedLeave ??
+                        0.0);
           }
 
-          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Seniority').firstOrNull != null) {
-                remainLeaves[1] = 
-                _myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Seniority').firstOrNull?.usableLeave ?? 0.0 - 
-                (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Seniority').firstOrNull?.usedLeave ?? 0.0);
+          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Seniority').firstOrNull !=
+              null) {
+            remainLeaves[1] = _myListLeaveEntilement
+                    .where((element) => element.LeaveType?.leaveTypeName == 'Seniority')
+                    .firstOrNull
+                    ?.usableLeave ??
+                0.0 -
+                    (_myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'Seniority')
+                            .firstOrNull
+                            ?.usedLeave ??
+                        0.0);
           }
 
-          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Transfer').firstOrNull != null) {
-                remainLeaves[2] = 
-                _myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Transfer').firstOrNull?.usableLeave ?? 0.0 - 
-                (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Transfer').firstOrNull?.usedLeave ?? 0.0);
+          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'Transfer').firstOrNull !=
+              null) {
+            remainLeaves[2] = _myListLeaveEntilement
+                    .where((element) => element.LeaveType?.leaveTypeName == 'Transfer')
+                    .firstOrNull
+                    ?.usableLeave ??
+                0.0 -
+                    (_myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'Transfer')
+                            .firstOrNull
+                            ?.usedLeave ??
+                        0.0);
           }
 
-          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'UnPaid').firstOrNull != null) {
-                remainLeaves[3] = 
-                _myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'UnPaid').firstOrNull?.usableLeave ?? 0.0 - 
-                (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'UnPaid').firstOrNull?.usedLeave ?? 0.0);
+          if (_myListLeaveEntilement.where((element) => element.LeaveType?.leaveTypeName == 'UnPaid').firstOrNull !=
+              null) {
+            remainLeaves[3] = _myListLeaveEntilement
+                    .where((element) => element.LeaveType?.leaveTypeName == 'UnPaid')
+                    .firstOrNull
+                    ?.usableLeave ??
+                0.0 -
+                    (_myListLeaveEntilement
+                            .where((element) => element.LeaveType?.leaveTypeName == 'UnPaid')
+                            .firstOrNull
+                            ?.usedLeave ??
+                        0.0);
           }
         }
       }

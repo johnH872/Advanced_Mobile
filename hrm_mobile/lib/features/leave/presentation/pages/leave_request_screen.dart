@@ -42,8 +42,8 @@ class _LeaveRequestScreenState extends State<LeaveRequestScreen> {
   Future<void> initData() async {
     final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
     leaveProvider.setUpInitProviderData( widget.leaveRequestEntity);
-    await leaveProvider.setUpData(widget.userEntity, context);
-  }
+    await leaveProvider.setUpData(widget.userEntity, widget.leaveRequestEntity, context);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -263,7 +263,9 @@ class _LeaveRequestScreenState extends State<LeaveRequestScreen> {
                                 selectedValue: leaveProvider.leaveTypeName),
                           ).then((value) {
                             if (value == null) return;
-                            leaveProvider.leaveTypeName = value;
+                            setState(() {
+                              leaveProvider.leaveTypeName = value;
+                            });
                             var index = leaveProvider.availableListTypeNames.indexOf(value);
                             leaveProvider.leaveRequestEntity.leaveEntitlementId = leaveProvider.myListLeaveEntilement
                                 .where((element) => element.leaveTypeId == leaveProvider.availableListTypeIds[index])

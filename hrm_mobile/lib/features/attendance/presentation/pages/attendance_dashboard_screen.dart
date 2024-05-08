@@ -56,7 +56,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: true);
     return Scaffold(
       appBar: CustomAppBar(
-        title: "Timesheet",
+        title: "Attendance",
         leadingIcon: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {},
@@ -79,7 +79,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 const Text(
-                                  "Timesheet Period",
+                                  "Period",
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                 ),
                                 Row(
@@ -128,7 +128,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  "Timesheet Period",
+                                  "Period",
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                                 ),
                                 const SizedBox(

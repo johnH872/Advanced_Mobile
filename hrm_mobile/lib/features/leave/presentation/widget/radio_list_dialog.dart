@@ -45,7 +45,12 @@ class _RadioListState extends State<RadioList> {
         ),
         Container(
           alignment: Alignment.centerRight,
-          child: Padding(padding: const EdgeInsets.only(right: 20), child: TextButton(onPressed: () => Navigator.pop(context, selectedValue.value), child: const Text("OK"))),
+          child: Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: TextButton(
+                onPressed: () => Navigator.pop(context, selectedValue.value),
+                child: const Text("OK"),
+              )),
         )
       ],
     );
