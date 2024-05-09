@@ -6,7 +6,7 @@ import 'package:hrm_mobile/features/informations/presentation/pages/employee_det
 import 'package:hrm_mobile/features/leave/presentation/pages/leave_request_history_screen.dart';
 
 const baseUrl = 'http://$baseIpAddress:5000/api';
-const baseIpAddress = "192.168.1.7";
+const baseIpAddress = "10.0.2.2";
 const defaultImageUrl = "https://img.favpng.com/3/21/23/computer-icons-mobile-app-development-android-png-favpng-9xKBGkE07CG2VqArV2AVqGNHk.jpg";
 enum SocketEventNames { PUNCHINOUT }
 const socketEvents = {

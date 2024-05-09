@@ -13,7 +13,7 @@ class _NotificationApiService implements NotificationApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.7:5000/api/Notification/';
+    baseUrl ??= 'http://10.0.2.2:5000/api/Notification/';
   }
 
   final Dio _dio;

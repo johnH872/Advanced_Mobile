@@ -13,7 +13,7 @@ class _DataStateApiService implements DataStateApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.7:5000/api/DataStateManagement/';
+    baseUrl ??= 'http://10.0.2.2:5000/api/DataStateManagement/';
   }
 
   final Dio _dio;

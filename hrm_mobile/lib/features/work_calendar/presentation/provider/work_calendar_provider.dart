@@ -53,15 +53,17 @@ class WorkCalendarProvider with ChangeNotifier {
     if (context.mounted) context.loaderOverlay.show();
     final response = await workCalendarRepository.saveWorkCalendarDetail(workCalendarDetailEntity);
     if (response.data != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Save work calendar detail successfully!',
-            style: TextStyle(color: Colors.white),
+      if(context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Save work calendar detail successfully!',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.green,
           ),
-          backgroundColor: Colors.green,
-        ),
-      );
+        );
+      }
     }
     if (context.mounted) context.loaderOverlay.hide();
     notifyListeners();

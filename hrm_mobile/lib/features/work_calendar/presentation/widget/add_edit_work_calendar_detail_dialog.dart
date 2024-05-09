@@ -180,7 +180,7 @@ class _AddEditWorkCalendarDetailDialogState extends State<AddEditWorkCalendarDet
                     width: 10,
                   ),
                   TextButton(
-                      onPressed: () {
+                      onPressed: () async{
                         DateTime startDate = _form.control('start').value as DateTime;
                         DateTime endDate = _form.control('end').value as DateTime;
                         if (startDate.isBefore(endDate)) {
@@ -206,7 +206,7 @@ class _AddEditWorkCalendarDetailDialogState extends State<AddEditWorkCalendarDet
                                 description: _form.control('description').value,
                                 codeColor: _form.control('codeColor').value);
                           }
-                          workCalendarProvider.saveWorkCalendarDetail(context, saveModel);
+                          await workCalendarProvider.saveWorkCalendarDetail(context, saveModel);
                           Navigator.pop(context, saveModel);
                         } else {
                           ScaffoldMessenger.of(context)

@@ -13,7 +13,7 @@ class _WorkCalendarApiService implements WorkCalendarApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.7:5000/api/WorkCalendarManagement/';
+    baseUrl ??= 'http://10.0.2.2:5000/api/WorkCalendarManagement/';
   }
 
   final Dio _dio;

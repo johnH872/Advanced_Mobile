@@ -13,7 +13,7 @@ class _SettingApiService implements SettingApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.7:5000/api/SettingManagement/';
+    baseUrl ??= 'http://10.0.2.2:5000/api/SettingManagement/';
   }
 
   final Dio _dio;

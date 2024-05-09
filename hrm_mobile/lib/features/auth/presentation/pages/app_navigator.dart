@@ -41,12 +41,12 @@ class _AppNavigatorState extends State<AppNavigator> {
       print('getToken: $value');
     });
 
-    FirebaseMessaging.onMessage.listen((event) {
+    FirebaseMessaging.onMessage.listen((event) async{
       print('Got a message whilst in the foreground!');
       if (event.notification != null) {
         print('Notification Title: ${event.notification!.title ?? ""}');
         print('Notification Body: ${event.notification!.body ?? ""}');
-        notificationProvider.getAllNotifications(context);
+        await notificationProvider.getAllNotifications(context);
       }
       // Navigator.pushNamed(navigatorKey.currentState!.context, '/home');
     });
