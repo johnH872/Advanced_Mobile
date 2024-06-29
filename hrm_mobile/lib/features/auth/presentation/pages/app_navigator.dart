@@ -31,7 +31,7 @@ class _AppNavigatorState extends State<AppNavigator> {
 
   Future<void> initData() async {
     final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
-    notificationProvider.getAllNotifications(context);
+    if(context.mounted) notificationProvider.getAllNotifications(context);
   }
 
   initFirebase() async {
@@ -41,12 +41,12 @@ class _AppNavigatorState extends State<AppNavigator> {
       print('getToken: $value');
     });
 
-    FirebaseMessaging.onMessage.listen((event) async{
+    FirebaseMessaging.onMessage.listen((event){
       print('Got a message whilst in the foreground!');
       if (event.notification != null) {
         print('Notification Title: ${event.notification!.title ?? ""}');
         print('Notification Body: ${event.notification!.body ?? ""}');
-        await notificationProvider.getAllNotifications(context);
+        if(context.mounted) notificationProvider.getAllNotifications(context);
       }
       // Navigator.pushNamed(navigatorKey.currentState!.context, '/home');
     });
@@ -55,7 +55,7 @@ class _AppNavigatorState extends State<AppNavigator> {
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
       print('onMessageOpenedApp: $event');
       Navigator.pushNamed(navigatorKey.currentState!.context, '/home');
-      notificationProvider.getAllNotifications(context);
+      if(context.mounted) notificationProvider.getAllNotifications(context);
     });
 
     // If application is closed or terminated

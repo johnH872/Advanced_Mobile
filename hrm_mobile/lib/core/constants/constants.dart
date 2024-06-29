@@ -13,7 +13,7 @@ const socketEvents = {
   SocketEventNames.PUNCHINOUT: 'PUNCHINOUT',
 };
 
-enum NotificationType { ATTENDANCE_REMINDER }
+enum NotificationType { ATTENDANCE_REMINDER, LEAVE_REQUEST, ATTENDANCE_REPORT }
 
 /// Bottom navigation configuration.
 List<Widget> bottomNavigationScreens() =>

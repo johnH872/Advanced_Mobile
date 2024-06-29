@@ -5,8 +5,24 @@ import 'package:hrm_mobile/features/notification/presentation/widget/notificatio
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
+
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  @override
+  void initState() {
+    initData();
+    super.initState();
+  }
+
+  initData() async {
+    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+    await notificationProvider.getAllNotifications(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +53,7 @@ class NotificationsScreen extends StatelessWidget {
                     ),
                     TextSpan(
                         text: " Mark all as read  ",
-                        style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 26, 101, 230))),
+                        style: TextStyle(fontSize: 13, color: Color(0xFF1A65E6))),
                   ],
                 ),
               ))

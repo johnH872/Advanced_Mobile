@@ -38,4 +38,6 @@ Map<String, dynamic> _$$NotificationModelImplToJson(
 
 const _$NotificationTypeEnumMap = {
   NotificationType.ATTENDANCE_REMINDER: 'ATTENDANCE_REMINDER',
+  NotificationType.LEAVE_REQUEST: 'LEAVE_REQUEST',
+  NotificationType.ATTENDANCE_REPORT: 'ATTENDANCE_REPORT',
 };
